@@ -1,5 +1,5 @@
 ---
-import { messages, stripLang, localePath } from '../lib/i18n.js';
+import { messages, stripLang, localePath, LANGS, LANG_META } from '../lib/i18n.js';
 
 const { lang = 'ja' } = Astro.props;
 const m = messages[lang];
@@ -8,8 +8,7 @@ const items = [
   { href: '/music/', label: m.nav.music },
   { href: '/about/', label: m.nav.about },
 ];
-const otherLang = lang === 'ja' ? 'en' : 'ja';
-const switchHref = localePath(otherLang, path);
+const otherLangs = LANGS.filter((l) => l !== lang);
 ---
 
 <header class="header">
@@ -31,9 +30,16 @@ const switchHref = localePath(otherLang, path);
       <a class="header__listen" href={localePath(lang, '/#listen')}>
         {m.nav.listen}<span class="header__arrow" aria-hidden="true">↗</span>
       </a>
-      <a class="header__lang" href={switchHref} hreflang={otherLang} lang={otherLang} aria-label={m.langSwitch.label}>
-        {m.langSwitch.short}
-      </a>
+      <details class="header__lang">
+        <summary>{LANG_META[lang].short}</summary>
+        <ul class="header__lang-list">
+          {otherLangs.map((l) => (
+            <li>
+              <a href={localePath(l, path)} hreflang={l} lang={l}>{LANG_META[l].name}</a>
+            </li>
+          ))}
+        </ul>
+      </details>
     </nav>
   </div>
 </header>
@@ -96,13 +102,36 @@ const switchHref = localePath(otherLang, path);
   }
   .header__listen:hover { border-color: var(--accent); color: var(--accent); }
   .header__arrow { font-size: 0.7em; }
-  .header__lang {
+  .header__lang { position: relative; }
+  .header__lang summary {
+    display: block;
+    list-style: none;
+    cursor: pointer;
     font-size: 0.7rem;
     letter-spacing: 0.16em;
     padding: 0.2rem 0.1rem;
     border-bottom: 1px solid var(--line);
   }
-  .header__lang:hover { color: var(--accent); border-color: var(--accent); }
+  .header__lang summary::-webkit-details-marker { display: none; }
+  .header__lang summary:hover,
+  .header__lang[open] summary { color: var(--accent); border-color: var(--accent); }
+  .header__lang-list {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.6rem);
+    margin: 0;
+    padding: 0.4rem 0;
+    list-style: none;
+    min-width: 7rem;
+    background: var(--header-bg);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .header__lang-list a { display: block; padding: 0.55rem 1rem; }
+  .header__lang-list a:hover { color: var(--accent); }
 
   /* スマホではLISTENの文字が詰まるので余白と字間を詰める */
   @media (max-width: 26rem) {

@@ -3,17 +3,14 @@ import '../styles/theme.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Player from '../components/Player.astro';
-import { messages, stripLang, localePath } from '../lib/i18n.js';
+import { messages, stripLang, localePath, LANGS, LANG_META } from '../lib/i18n.js';
 import { MEASUREMENT_ID, ANALYTICS_HOSTNAME, isAnalyticsEnabled } from '../lib/analytics.js';
 
 const { title, lang = 'ja', description = messages[lang].siteDescription } = Astro.props;
 
-// 日英それぞれのURL（hreflang用）
+// 各言語のURL（hreflang用）
 const basePath = stripLang(Astro.url.pathname);
-const alternates = [
-  { lang: 'ja', href: new URL(localePath('ja', basePath), Astro.site) },
-  { lang: 'en', href: new URL(localePath('en', basePath), Astro.site) },
-];
+const alternates = LANGS.map((l) => ({ lang: l, href: new URL(localePath(l, basePath), Astro.site) }));
 
 const fullTitle = title ? `${title} | Nowa Music` : 'Nowa Music';
 const analyticsEnabled = isAnalyticsEnabled(import.meta.env.PROD);
@@ -29,7 +26,7 @@ const analyticsEnabled = isAnalyticsEnabled(import.meta.env.PROD);
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'ja_JP'} />
+    <meta property="og:locale" content={LANG_META[lang].locale} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!-- theme-colorはmeta属性でCSS変数を使えないため、--bg-deepと同じ値を直書きしている（色リテラル制約の例外） -->
     <meta name="theme-color" content="#070d1c" />
@@ -40,7 +37,7 @@ const analyticsEnabled = isAnalyticsEnabled(import.meta.env.PROD);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400&family=Noto+Serif+JP:wght@200;300;400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400&family=Noto+Serif+JP:wght@200;300;400&family=Noto+Serif+KR:wght@200;300;400&display=swap"
     />
     {analyticsEnabled && (
       <>
