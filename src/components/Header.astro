@@ -1,29 +1,38 @@
 ---
-const path = Astro.url.pathname;
+import { messages, stripLang, localePath } from '../lib/i18n.js';
+
+const { lang = 'ja' } = Astro.props;
+const m = messages[lang];
+const path = stripLang(Astro.url.pathname);
 const items = [
-  { href: '/music/', label: 'MUSIC' },
-  { href: '/about/', label: 'ABOUT' },
+  { href: '/music/', label: m.nav.music },
+  { href: '/about/', label: m.nav.about },
 ];
+const otherLang = lang === 'ja' ? 'en' : 'ja';
+const switchHref = localePath(otherLang, path);
 ---
 
 <header class="header">
   <div class="container header__inner">
-    <a class="header__logo" href="/">
+    <a class="header__logo" href={localePath(lang, '/')}>
       <span class="header__logo-main">NOWA</span>
       <span class="header__logo-sub">MUSIC</span>
     </a>
-    <nav class="header__nav" aria-label="メインメニュー">
+    <nav class="header__nav" aria-label={m.nav.label}>
       {items.map((item) => (
         <a
           class="header__link"
-          href={item.href}
+          href={localePath(lang, item.href)}
           aria-current={path.startsWith(item.href) ? 'page' : undefined}
         >
           {item.label}
         </a>
       ))}
-      <a class="header__listen" href="/#listen">
-        LISTEN<span class="header__arrow" aria-hidden="true">↗</span>
+      <a class="header__listen" href={localePath(lang, '/#listen')}>
+        {m.nav.listen}<span class="header__arrow" aria-hidden="true">↗</span>
+      </a>
+      <a class="header__lang" href={switchHref} hreflang={otherLang} lang={otherLang} aria-label={m.langSwitch.label}>
+        {m.langSwitch.short}
       </a>
     </nav>
   </div>
@@ -87,10 +96,17 @@ const items = [
   }
   .header__listen:hover { border-color: var(--accent); color: var(--accent); }
   .header__arrow { font-size: 0.7em; }
+  .header__lang {
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    padding: 0.2rem 0.1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .header__lang:hover { color: var(--accent); border-color: var(--accent); }
 
   /* スマホではLISTENの文字が詰まるので余白と字間を詰める */
   @media (max-width: 26rem) {
-    .header__nav { gap: 0.85rem; font-size: 0.7rem; letter-spacing: 0.16em; }
+    .header__nav { gap: 0.6rem; font-size: 0.68rem; letter-spacing: 0.12em; }
     .header__listen { padding: 0.45rem 0.7rem; }
   }
 

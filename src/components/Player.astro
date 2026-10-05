@@ -1,11 +1,15 @@
 ---
 // 画面全体をおおうプレイヤー。data-play を持つ要素のクリックで開く。
+import { messages } from '../lib/i18n.js';
+
+const { lang = 'ja' } = Astro.props;
+const m = messages[lang].player;
 ---
 
 <div class="player" id="player" hidden>
   <div class="player__backdrop" data-player-close></div>
-  <div class="player__panel" role="dialog" aria-modal="true" aria-label="プレイヤー">
-    <button class="player__close" type="button" data-player-close aria-label="閉じる">×</button>
+  <div class="player__panel" role="dialog" aria-modal="true" aria-label={m.label}>
+    <button class="player__close" type="button" data-player-close aria-label={m.close}>×</button>
     <div class="player__frame" id="player-frame"></div>
     <p class="player__title" id="player-title"></p>
   </div>

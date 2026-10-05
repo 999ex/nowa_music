@@ -1,5 +1,7 @@
 ---
-const { albums = [], limit } = Astro.props;
+import { messages } from '../lib/i18n.js';
+
+const { albums = [], limit, lang = 'ja' } = Astro.props;
 const source = typeof limit === 'number' ? albums.slice(0, limit) : albums;
 
 // 「2026 · 12曲」のような1行を作る。公開日が壊れていれば年を出さない。
@@ -7,7 +9,7 @@ const items = source.map((album) => {
   const year = Number(String(album.publishedAt).slice(0, 4));
   const parts = [
     Number.isNaN(year) ? null : String(year),
-    album.itemCount > 0 ? `${album.itemCount}曲` : null,
+    album.itemCount > 0 ? messages[lang].trackCount(album.itemCount) : null,
   ].filter(Boolean);
   return { ...album, meta: parts.join(' · ') };
 });

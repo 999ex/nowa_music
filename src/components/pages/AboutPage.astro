@@ -1,0 +1,122 @@
+---
+import { getImage } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import portraitSource from '../../assets/hero.png';
+import { activeLinks } from '../../lib/links.js';
+import { messages } from '../../lib/i18n.js';
+
+const { lang = 'ja' } = Astro.props;
+const m = messages[lang].about;
+
+const links = activeLinks();
+
+// 人物写真はトップと同じ画像。ビルド時にwebpへ変換・縮小する
+const portrait = await getImage({ src: portraitSource, format: 'webp', width: 900, quality: 78 });
+---
+
+<BaseLayout title="ABOUT" description={m.description} lang={lang}>
+  <main>
+    <section class="section head">
+      <div class="container">
+        <div class="section__head">
+          <p class="section__label">ABOUT</p>
+          <h1 class="section__title page__title">Nowa</h1>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container profile">
+        <div class="profile__art reveal" style={`--profile-image: url(${portrait.src})`}></div>
+        <div class="profile__text reveal">
+          {m.paragraphs.map((lines) => (
+            <p>{lines.map((line, i) => (<>{i > 0 && <br />}{line}</>))}</p>
+          ))}
+
+
+          <dl class="facts">
+            {m.facts.map((fact) => (
+              <div class="facts__row">
+                <dt>{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    {links.length > 0 && (
+      <section class="section">
+        <div class="container reveal">
+          <div class="section__head">
+            <h2 class="section__label">LISTEN</h2>
+          </div>
+          <ul class="listen">
+            {links.map((link) => (
+              <li>
+                <a href={link.url} target="_blank" rel="noopener">
+                  <span>{link.label}</span>
+                  <span class="listen__arrow" aria-hidden="true">↗</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )}
+  </main>
+</BaseLayout>
+
+<style>
+  .head { padding-top: 9rem; }
+  .profile {
+    display: grid;
+    gap: 3rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 48rem) {
+    .profile { grid-template-columns: 1fr 1.2fr; gap: 4rem; align-items: start; }
+  }
+  .profile__art {
+    aspect-ratio: 3 / 4;
+    border: 1px solid var(--line);
+    /* --profile-image は上のインラインstyleで最適化済み画像のURLが入る。
+       画像を外した場合は下のグラデーションだけが残る。 */
+    background:
+      linear-gradient(180deg, var(--profile-scrim-near), var(--profile-scrim-far)),
+      var(--profile-image, none),
+      linear-gradient(140deg, var(--bg-mid), var(--bg-far));
+    background-size: cover;
+    background-position: center 25%;
+  }
+  .profile__text p { margin: 0 0 2rem; }
+
+  /* プロフィール情報。控えめな罫線で区切る */
+  .facts {
+    margin: 3.5rem 0 0;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+  .facts__row {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: 0 1.5rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .facts dt {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    line-height: 2.2;
+  }
+  .facts dd {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 2;
+  }
+  @media (max-width: 26rem) {
+    .facts__row { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+</style>

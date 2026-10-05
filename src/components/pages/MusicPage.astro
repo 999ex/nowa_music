@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AlbumShelf from '../AlbumShelf.astro';
+import raw from '../../data/youtube.json';
+import { buildCatalog } from '../../lib/catalog.js';
+import { messages } from '../../lib/i18n.js';
+
+const { lang = 'ja' } = Astro.props;
+const m = messages[lang].music;
+
+const { albums } = buildCatalog(raw);
+---
+
+<BaseLayout title="MUSIC" description={m.description} lang={lang}>
+  <main>
+    <section class="section head">
+      <div class="container">
+        <div class="section__head">
+          <p class="section__label">MUSIC</p>
+          <h1 class="section__title page__title">{m.title}</h1>
+        </div>
+      </div>
+    </section>
+
+    {albums.length > 0 && (
+      <section class="section">
+        <div class="container reveal">
+          <div class="section__head">
+            <h2 class="section__label">ALBUM</h2>
+          </div>
+          <AlbumShelf albums={albums} lang={lang} />
+        </div>
+      </section>
+    )}
+
+    <section class="section">
+      <div class="container">
+        <p class="more">
+          <a href="https://www.youtube.com/@nowa_music_jp/videos" target="_blank" rel="noopener">
+            {m.more}
+          </a>
+        </p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .head { padding-top: 9rem; }
+</style>

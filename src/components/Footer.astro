@@ -1,5 +1,9 @@
 ---
 import { activeLinks, CONTACT_EMAIL } from '../lib/links.js';
+import { messages } from '../lib/i18n.js';
+
+const { lang = 'ja' } = Astro.props;
+const m = messages[lang].footer;
 
 const links = activeLinks();
 const year = new Date().getFullYear();
@@ -7,7 +11,7 @@ const year = new Date().getFullYear();
 
 <footer class="footer">
   <div class="container">
-    <nav class="footer__links" aria-label="外部リンク">
+    <nav class="footer__links" aria-label={m.links}>
       {links.map((link) => (
         <a href={link.url} target="_blank" rel="noopener">{link.label}</a>
       ))}
@@ -15,7 +19,7 @@ const year = new Date().getFullYear();
     {CONTACT_EMAIL && (
       <p class="footer__mail"><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
     )}
-    <p class="footer__note">当サイトではGoogleアナリティクスを使用しています。</p>
+    <p class="footer__note">{m.analytics}</p>
     <p class="footer__copy">© {year} Nowa Music</p>
   </div>
 </footer>
