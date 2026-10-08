@@ -3,6 +3,8 @@ import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AlbumShelf from '../AlbumShelf.astro';
 import heroSource from '../../assets/hero.png';
+import personSource from '../../assets/hero-person.png';
+import personDesktopSource from '../../assets/hero-person-desktop.png';
 import raw from '../../data/youtube.json';
 import { buildCatalog } from '../../lib/catalog.js';
 import { activeLinks } from '../../lib/links.js';
@@ -25,9 +27,15 @@ const heroDesktop = heroDesktopSource
   ? await getImage({ src: heroDesktopSource, format: 'webp', width: 1920, quality: 78 })
   : null;
 
+// パララックス用に背景から切り抜いた人物だけの画像。hero / hero-desktop と同じ構図・サイズで作る。
+const person = await getImage({ src: personSource, format: 'webp', width: 900, quality: 80 });
+const personDesktop = await getImage({ src: personDesktopSource, format: 'webp', width: 1920, quality: 80 });
+
 const heroStyle = [
   `--hero-image: url(${hero.src})`,
   `--hero-image-desktop: url(${(heroDesktop ?? hero).src})`,
+  `--hero-person: url(${person.src})`,
+  `--hero-person-desktop: url(${personDesktop.src})`,
 ].join('; ');
 
 const { albums } = buildCatalog(raw);
@@ -38,9 +46,19 @@ const tonightPlay = tonight ? `${tonight.kind ?? 'video'}:${tonight.id}` : '';
 ---
 
 <BaseLayout lang={lang}>
+  <!-- スクロールに合わせて 夕暮れ → 深夜 → 明け方 と色が移る夜空。深夜は body の背景そのもの -->
+  <div class="sky" aria-hidden="true">
+    <div class="sky__dusk"></div>
+    <div class="sky__dawn"></div>
+  </div>
   <main>
     <section class="hero">
-      <div class="hero__art" style={heroStyle}></div>
+      <!-- 奥から 夜景の写真 → 切り抜いた人物 → 暗幕。スクロールで層ごとに違う速さで動く -->
+      <div class="hero__art" style={heroStyle} aria-hidden="true">
+        <div class="hero__layer hero__layer--bg"><div class="hero__img"></div></div>
+        <div class="hero__layer hero__layer--person"><div class="hero__img"></div></div>
+        <div class="hero__scrim"></div>
+      </div>
       <div class="container hero__body">
         <p class="hero__label">A J-POP BALLAD PROJECT</p>
         <h1 class="hero__brand">NOWA MUSIC</h1>
@@ -59,7 +77,9 @@ const tonightPlay = tonight ? `${tonight.kind ?? 'video'}:${tonight.id}` : '';
     <section class="section words">
       <div class="container">
         {m.words.map((lines) => (
-          <p class="reveal">{lines.map((line, i) => (<>{i > 0 && <br />}{line}</>))}</p>
+          <p class="reveal">{lines.map((line, i) => (
+            <span class="words__line" style={`--i: ${i}`}>{line}</span>
+          ))}</p>
         ))}
       </div>
     </section>
@@ -120,34 +140,115 @@ const tonightPlay = tonight ? `${tonight.kind ?? 'video'}:${tonight.id}` : '';
     padding-block: 9rem 7rem;
     overflow: hidden;
   }
+  /* --hs はスクリプトが入れるスクロール量(px)。各層はそれに係数を掛けた分だけ下へずらし、
+     画面上の見かけの速さを 背景 < 人物 < 文字 にして奥行きを出す。
+     人物を背景より速く上げると、背景側に残った人物は切り抜きの下に隠れたままになる。 */
+  .hero {
+    --k-bg: 0.45;
+    --k-person: 0.2;
+    --k-text: -0.25;
+  }
+  @media (max-width: 47.99rem) {
+    .hero { --k-bg: 0.3; --k-person: 0.12; --k-text: -0.15; }
+  }
   .hero__art {
     position: absolute;
     inset: 0;
-    /* --hero-image / --hero-image-desktop は上のインラインstyleで最適化済み画像のURLが入る。
-       画像を外した場合は none に落ちてグラデーションだけが残る。 */
-    background-image:
-      linear-gradient(180deg, var(--hero-scrim-near) 0%, var(--hero-scrim-far) 55%, var(--bg-deep) 100%),
-      var(--hero-image, none);
+    overflow: hidden;
+    /* 下端は写真ごと透明に溶かし、後ろの夜空の色へ自然につなぐ */
+    -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+  }
+  .hero__layer {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+  }
+  .hero__layer--bg { transform: translate3d(0, calc(var(--hs, 0) * var(--k-bg) * 1px), 0); }
+  .hero__layer--person { transform: translate3d(0, calc(var(--hs, 0) * var(--k-person) * 1px), 0); }
+  .hero__img {
+    position: absolute;
+    inset: 0;
     background-size: cover;
     background-position: center 20%;
   }
-  /* 横長のPC幅では縦長写真の上下が大きく切られ、顔が上に寄って暗く沈む。
-     暗幕をコピーの乗る左下だけに寄せ、顔のある中央〜右上は薄くする。 */
+  /* 画像を外した場合は none に落ちて暗幕だけが残る */
+  .hero__layer--bg .hero__img {
+    background-image: var(--hero-image, none);
+    animation: hero-bg-in 3.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .hero__layer--person .hero__img {
+    background-image: var(--hero-person, none);
+    animation: hero-person-in 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  /* 開いた瞬間、夜景がゆっくり引いていき、人物が少し遅れて手前に浮かぶ */
+  @keyframes hero-bg-in {
+    from { transform: scale(1.08); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+  @keyframes hero-person-in {
+    from { transform: translateY(1.5rem); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--hero-scrim-near) 0%, var(--hero-scrim-far) 55%);
+  }
+  /* 横長のPC幅では暗幕をコピーの乗る左下だけに寄せ、顔のある中央〜右上は薄くする */
   @media (min-width: 48rem) {
-    .hero__art {
-      background-image:
-        linear-gradient(180deg, var(--hero-scrim-none) 62%, var(--bg-deep) 100%),
-        linear-gradient(
-          to top right,
-          var(--hero-scrim-strong) 0%,
-          var(--hero-scrim-mid) 45%,
-          var(--hero-scrim-soft) 100%
-        ),
-        var(--hero-image-desktop, var(--hero-image, none));
-      background-position: center 25%;
+    .hero__img { background-position: center 25%; }
+    .hero__layer--bg .hero__img { background-image: var(--hero-image-desktop, var(--hero-image, none)); }
+    .hero__layer--person .hero__img { background-image: var(--hero-person-desktop, var(--hero-person, none)); }
+    .hero__scrim {
+      background: linear-gradient(
+        to top right,
+        var(--hero-scrim-strong) 0%,
+        var(--hero-scrim-mid) 45%,
+        var(--hero-scrim-soft) 100%
+      );
     }
   }
-  .hero__body { position: relative; }
+  .hero__body {
+    position: relative;
+    transform: translate3d(0, calc(var(--hs, 0) * var(--k-text) * 1px), 0);
+    opacity: var(--hero-fade, 1);
+  }
+  .hero__meta,
+  .hero__scroll { opacity: var(--hero-fade, 1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__layer, .hero__body { transform: none; }
+    .hero__img { animation: none; }
+  }
+
+  /* ⑤ 夜空。深夜(body の背景)の上に、夕暮れと明け方の色を重ねて濃さだけを変える */
+  .sky {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .sky > div {
+    position: absolute;
+    inset: 0;
+  }
+  .sky__dusk {
+    background:
+      radial-gradient(90% 55% at 70% 100%, rgba(214, 138, 96, 0.22), transparent 70%),
+      linear-gradient(180deg, transparent 0%, rgba(74, 42, 78, 0.55) 100%);
+    opacity: var(--dusk, 1);
+  }
+  .sky__dawn {
+    background:
+      radial-gradient(100% 60% at 30% 100%, rgba(238, 168, 170, 0.2), transparent 70%),
+      linear-gradient(180deg, transparent 0%, rgba(70, 98, 150, 0.5) 100%);
+    opacity: var(--dawn, 0);
+  }
+  /* 動きを減らす設定では深夜のまま固定する */
+  @media (prefers-reduced-motion: reduce) {
+    .sky { display: none; }
+  }
   .hero__label {
     font-family: var(--font-display);
     font-size: 0.8rem;
@@ -243,8 +344,20 @@ const tonightPlay = tonight ? `${tonight.kind ?? 'video'}:${tonight.id}` : '';
     line-height: 2.6;
     margin: 0 0 2rem;
   }
-  .words p:nth-child(2) { transition-delay: 0.15s; }
-  .words p:nth-child(3) { transition-delay: 0.3s; }
+  /* ③ 段落ごとの .reveal は表示のきっかけにだけ使い、中の1行ずつを霧が晴れるように出す */
+  .words p.reveal { opacity: 1; transform: none; }
+  .words__line {
+    display: block;
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(0.75rem);
+    transition: opacity 1.6s ease, filter 1.6s ease, transform 1.6s ease;
+    transition-delay: calc(var(--i) * 0.55s);
+  }
+  .words p.is-visible .words__line { opacity: 1; filter: none; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .words__line { opacity: 1; filter: none; transform: none; transition: none; }
+  }
 
   .about p { max-width: 34rem; }
 </style>
@@ -261,5 +374,37 @@ const tonightPlay = tonight ? `${tonight.kind ?? 'video'}:${tonight.id}` : '';
     };
     render();
     setInterval(render, 30000);
+  }
+
+  // スクロール量を CSS 変数に流すだけにして、動きの係数は CSS 側で決める。
+  // 動きを減らす設定の人には何もしない（CSS の既定値で静止した状態になる）。
+  const heroEl = document.querySelector<HTMLElement>('.hero');
+  const root = document.documentElement;
+  const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+  if (heroEl && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const y = window.scrollY;
+      const h = heroEl.offsetHeight;
+      // ヒーローが画面外に出たら層を動かす必要はない
+      if (y <= h) {
+        heroEl.style.setProperty('--hs', String(y));
+        heroEl.style.setProperty('--hero-fade', String(1 - clamp01(y / (h * 0.7))));
+      }
+      // ページ全体の進み具合 0→1 で 夕暮れ → 深夜 → 明け方
+      const p = clamp01(y / Math.max(1, root.scrollHeight - window.innerHeight));
+      root.style.setProperty('--dusk', String(clamp01(1 - p * 2.2)));
+      root.style.setProperty('--dawn', String(clamp01((p - 0.55) / 0.4)));
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
   }
 </script>
