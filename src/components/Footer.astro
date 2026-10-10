@@ -2,15 +2,18 @@
 import { activeLinks, CONTACT_EMAIL } from '../lib/links.js';
 import { messages } from '../lib/i18n.js';
 
-const { lang = 'ja' } = Astro.props;
+// tone='light' はトップページ用。朝の明るい色のまま終わらせる
+const { lang = 'ja', tone } = Astro.props;
 const m = messages[lang].footer;
 
 const links = activeLinks();
 const year = new Date().getFullYear();
 ---
 
-<footer class="footer">
+<footer class:list={["footer", tone === "light" && "tone-light footer--light"]}>
   <div class="container">
+    <p class="footer__brand">NOWA MUSIC</p>
+    <p class="footer__message">{m.message}</p>
     <nav class="footer__links" aria-label={m.links}>
       {links.map((link) => (
         <a href={link.url} target="_blank" rel="noopener">{link.label}</a>
@@ -30,6 +33,19 @@ const year = new Date().getFullYear();
     padding-block: 3rem 4rem;
     text-align: center;
     color: var(--text-dim);
+  }
+  .footer--light { background: var(--dawn-3); border-top-color: transparent; }
+  .footer__brand {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    letter-spacing: 0.42em;
+    color: var(--text);
+    margin: 0;
+  }
+  .footer__message {
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    margin: 1rem 0 2.5rem;
   }
   .footer__links {
     display: flex;

@@ -6,7 +6,7 @@ import Player from '../components/Player.astro';
 import { messages, stripLang, localePath, LANGS, LANG_META } from '../lib/i18n.js';
 import { MEASUREMENT_ID, ANALYTICS_HOSTNAME, isAnalyticsEnabled } from '../lib/analytics.js';
 
-const { title, lang = 'ja', description = messages[lang].siteDescription } = Astro.props;
+const { title, tone, lang = 'ja', description = messages[lang].siteDescription } = Astro.props;
 
 // 各言語のURL（hreflang用）
 const basePath = stripLang(Astro.url.pathname);
@@ -60,7 +60,7 @@ const analyticsEnabled = isAnalyticsEnabled(import.meta.env.PROD);
   <body>
     <Header lang={lang} />
     <slot />
-    <Footer lang={lang} />
+    <Footer lang={lang} tone={tone} />
     <Player lang={lang} />
 
     <script>

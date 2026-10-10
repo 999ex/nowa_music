@@ -1,120 +1,190 @@
 ---
-import { getImage } from 'astro:assets';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AlbumShelf from '../AlbumShelf.astro';
-import heroSource from '../../assets/hero.png';
-import personSource from '../../assets/hero-person.png';
-import personDesktopSource from '../../assets/hero-person-desktop.png';
+import TrackList from '../TrackList.astro';
+import heroImage from '../../assets/brand/hero.webp';
+import storyImage from '../../assets/brand/story.webp';
+import memory01 from '../../assets/brand/memory-01.webp';
+import memory02 from '../../assets/brand/memory-02.webp';
+import memory03 from '../../assets/brand/memory-03.webp';
+import memory04 from '../../assets/brand/memory-04.webp';
+import memory05 from '../../assets/brand/memory-05.webp';
+import aboutImage from '../../assets/brand/about.webp';
 import raw from '../../data/youtube.json';
 import { buildCatalog } from '../../lib/catalog.js';
 import { activeLinks } from '../../lib/links.js';
 import { messages, localePath } from '../../lib/i18n.js';
 
 const { lang = 'ja' } = Astro.props;
-const m = messages[lang].home;
+const t = messages[lang].home;
 
-// ヒーロー画像はビルド時にwebpへ変換・縮小する（元は900x1600の1.3MB）
-const hero = await getImage({ src: heroSource, format: 'webp', width: 900, quality: 78 });
+// 横長写真はビルド時にwebpの2サイズへ。スマホ(高DPR)でも大きい方が選ばれる
+const PHOTO = { format: 'webp', quality: 80, widths: [960, 1672], sizes: '100vw' } as const;
 
-// PC用の横長カット。src/assets/hero-desktop.（jpg|jpeg|png|webp）を置くと自動で使われる。
-// 未配置ならスマホ用画像にフォールバックするので、ビルドは壊れない。
-const desktopCandidates = import.meta.glob('../../assets/hero-desktop.{jpg,jpeg,png,webp}', {
-  eager: true,
-  import: 'default',
-});
-const heroDesktopSource = Object.values(desktopCandidates)[0] ?? null;
-const heroDesktop = heroDesktopSource
-  ? await getImage({ src: heroDesktopSource, format: 'webp', width: 1920, quality: 78 })
-  : null;
+// fx = スマホの縦長画面で切り抜くときの横位置。人物の顔が画面の中央付近に来るよう写真ごとに決めている。
+// side = PCで言葉を置く側。人物と重ならない方にする。
+// motion = シーンごとの動き。後悔 → 懐かしさ → 共感 → 受容 → 優しい記憶 の流れに合わせる。
+const scenes = [
+  { src: memory01, fx: 68, motion: 'zoom' },
+  { src: memory02, fx: 62, motion: 'still' },
+  { src: memory03, fx: 37, motion: 'pan', side: 'right' },
+  { src: memory04, fx: 50, motion: 'soft' },
+  { src: memory05, fx: 70, motion: 'dawn' },
+].map((scene, i) => ({ ...scene, copy: t.scenes[i] }));
 
-// パララックス用に背景から切り抜いた人物だけの画像。hero / hero-desktop と同じ構図・サイズで作る。
-const person = await getImage({ src: personSource, format: 'webp', width: 900, quality: 80 });
-const personDesktop = await getImage({ src: personDesktopSource, format: 'webp', width: 1920, quality: 80 });
-
-const heroStyle = [
-  `--hero-image: url(${hero.src})`,
-  `--hero-image-desktop: url(${(heroDesktop ?? hero).src})`,
-  `--hero-person: url(${person.src})`,
-  `--hero-person-desktop: url(${personDesktop.src})`,
-].join('; ');
-
-const { albums } = buildCatalog(raw);
+const { albums, tracks } = buildCatalog(raw);
+const latest = albums[0];
+const moreAlbums = albums.slice(1);
 const links = activeLinks();
-// ヒーローの再生ボタンは最新のアルバム
-const tonight = albums[0];
-const tonightPlay = tonight ? `${tonight.kind ?? 'video'}:${tonight.id}` : '';
+// MUSICセクションから直接飛べる主要な配信先
+const streamLinks = links.filter((link) => ['YouTube', 'Spotify', 'Apple Music'].includes(link.label));
+const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
 ---
 
-<BaseLayout lang={lang}>
-  <!-- スクロールに合わせて 夕暮れ → 深夜 → 明け方 と色が移る夜空。深夜は body の背景そのもの -->
-  <div class="sky" aria-hidden="true">
-    <div class="sky__dusk"></div>
-    <div class="sky__dawn"></div>
-  </div>
-  <main>
+<BaseLayout lang={lang} tone="light">
+  <main class="home">
+    <!-- 01 HERO -->
     <section class="hero">
-      <!-- 奥から 夜景の写真 → 切り抜いた人物 → 暗幕。スクロールで層ごとに違う速さで動く -->
-      <div class="hero__art" style={heroStyle} aria-hidden="true">
-        <div class="hero__layer hero__layer--bg"><div class="hero__img"></div></div>
-        <div class="hero__layer hero__layer--person"><div class="hero__img"></div></div>
-        <div class="hero__scrim"></div>
+      <div class="hero__media" style="--fx: 77%" aria-hidden="true">
+        <div class="hero__shift">
+          <div class="hero__zoom">
+            <Image src={heroImage} alt="" class="hero__img" loading="eager" fetchpriority="high" {...PHOTO} />
+          </div>
+        </div>
       </div>
+      <div class="hero__scrim" aria-hidden="true"></div>
       <div class="container hero__body">
-        <p class="hero__label">A J-POP BALLAD PROJECT</p>
-        <h1 class="hero__brand">NOWA MUSIC</h1>
-        <p class="hero__copy">{m.heroCopy.map((line, i) => (<>{i > 0 && <br />}{line}</>))}</p>
-        {tonight && (
-          <button class="hero__play" type="button" data-play={tonightPlay} data-title={tonight.title}>
-            <span>{m.heroPlay}</span>
-            <span class="hero__play-arrow" aria-hidden="true">→</span>
-          </button>
-        )}
+        <p class="hero__label">NOWA MUSIC</p>
+        <h1 class="hero__copy">{t.heroCopy.map((line) => <span>{line}</span>)}</h1>
+        <p class="hero__sub">{t.heroSub.map((line) => <span>{line}</span>)}</p>
+        <a class="hero__cta" href="#music">
+          <span>{t.heroCta}</span>
+          <span class="hero__cta-arrow" aria-hidden="true">→</span>
+        </a>
       </div>
       <p class="hero__meta" aria-hidden="true">TOKYO · NIGHT · <span id="hero-clock"></span></p>
       <div class="hero__scroll" aria-hidden="true"><span>SCROLL</span></div>
     </section>
 
-    <section class="section words">
-      <div class="container">
-        {m.words.map((lines) => (
-          <p class="reveal">{lines.map((line, i) => (
-            <span class="words__line" style={`--i: ${i}`}>{line}</span>
-          ))}</p>
-        ))}
+    <!-- 02 OUR STORY -->
+    <section class="story" data-parallax>
+      <div class="story__media" style="--fx: 82%" aria-hidden="true">
+        <div class="parallax">
+          <Image src={storyImage} alt="" class="cover" {...PHOTO} />
+        </div>
+      </div>
+      <div class="story__scrim" aria-hidden="true"></div>
+      <div class="container story__body reveal stagger">
+        <p class="eyebrow line" style="--i: 0">OUR STORY</p>
+        <h2 class="story__title line" style="--i: 1">{t.storyTitle.map((line) => <span>{line}</span>)}</h2>
+        <p class="story__lines">
+          {t.storyLines.map((line, i) => <span class="line" style={`--i: ${i + 2.5}`}>{line}</span>)}
+        </p>
       </div>
     </section>
 
-    {albums.length > 0 && (
-      <section class="section" id="albums">
-        <div class="container reveal">
-          <div class="section__head">
-            <p class="section__label">ALBUM</p>
-            <h2 class="section__title">{m.albumTitle}</h2>
+    <!-- 03 MEMORIES。JSが動けばスクロールで1本の映像のようにつながる。動かない環境では写真が縦に並ぶ -->
+    <section class="memories" style={`--n: ${scenes.length}`} aria-label="MEMORIES">
+      <div class="memories__stage">
+        {scenes.map((scene, i) => (
+          <div class={`scene scene--${scene.motion} scene--${scene.side ?? "left"}`} data-scene style={`--fx: ${scene.fx}%`}>
+            <div class="scene__media" aria-hidden="true">
+              <Image src={scene.src} alt="" class="cover scene__img" {...PHOTO} />
+            </div>
+            <div class="scene__scrim" aria-hidden="true"></div>
+            <div class="container scene__body">
+              <p class="scene__copy">
+                <span class="scene__no" aria-hidden="true">{`SCENE ${String(i + 1).padStart(2, '0')}`}</span>
+                {scene.copy.map((line) => <span class="scene__line">{line}</span>)}
+              </p>
+            </div>
           </div>
-          <AlbumShelf albums={albums} limit={8} lang={lang} />
-          {albums.length > 8 && <p class="more"><a href={localePath(lang, '/music/')}>{m.allAlbums}</a></p>}
+        ))}
+        <div class="memories__dawn" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- 04 MUSIC。ここから朝の明るいトーン。演出より見つけやすさを優先する -->
+    {albums.length > 0 && (
+      <section class="section music tone-light" id="music">
+        <div class="container">
+          <div class="section__head reveal">
+            <p class="section__label">MUSIC</p>
+            <h2 class="section__title">{t.musicTitle}</h2>
+            <p class="music__sub">{t.musicSub.map((line) => <span>{line}</span>)}</p>
+          </div>
+
+          {latest && (
+            <div class="feature reveal">
+              <button class="feature__art" type="button" data-play={playId(latest)} data-title={latest.title}>
+                {latest.thumbnail && <img src={latest.thumbnail} alt="" loading="lazy" width="480" height="270" />}
+                <span class="feature__play" aria-hidden="true">▶</span>
+              </button>
+              <div class="feature__text">
+                <p class="feature__label">{t.latest}</p>
+                <h3 class="feature__title">{latest.title}</h3>
+                <button class="feature__button" type="button" data-play={playId(latest)} data-title={latest.title}>
+                  <span>{t.playLatest}</span>
+                  <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {moreAlbums.length > 0 && (
+            <div class="music__block reveal">
+              <h3 class="music__heading">{t.albums}</h3>
+              <AlbumShelf albums={moreAlbums} limit={6} lang={lang} />
+              <p class="more"><a href={localePath(lang, '/music/')}>{t.allAlbums}</a></p>
+            </div>
+          )}
+
+          {tracks.length > 0 && (
+            <div class="music__block reveal">
+              <h3 class="music__heading">{t.singles}</h3>
+              <TrackList tracks={tracks} limit={6} />
+            </div>
+          )}
+
+          {streamLinks.length > 0 && (
+            <ul class="streams reveal">
+              {streamLinks.map((link) => (
+                <li>
+                  <a href={link.url} target="_blank" rel="noopener">
+                    {link.label}<span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
     )}
 
-    <section class="section" id="about">
-      <div class="container reveal about">
-        <div class="section__head">
-          <p class="section__label">ABOUT</p>
-          <h2 class="section__title">{m.aboutTitle}</h2>
+    <!-- 05 ABOUT -->
+    <section class="section about tone-light" id="about">
+      <div class="container about__grid">
+        <div class="about__art reveal">
+          <Image src={aboutImage} alt="Nowa" class="cover" format="webp" quality={80} widths={[560, 1122]} sizes="(min-width: 48rem) 40vw, 100vw" />
         </div>
-        <p>{m.aboutText.map((line, i) => (<>{i > 0 && <br />}{line}</>))}</p>
-        <p class="more"><a href={localePath(lang, '/about/')}>{m.readMore}</a></p>
+        <div class="about__text reveal">
+          <p class="section__label">ABOUT NOWA MUSIC</p>
+          <h2 class="about__copy">{t.aboutCopy.map((line) => <span>{line}</span>)}</h2>
+          {t.aboutBody.map((lines) => (
+            <p>{lines.map((line, i) => (<>{i > 0 && <br />}{line}</>))}</p>
+          ))}
+          <p class="more"><a href={localePath(lang, '/about/')}>{t.readMore}</a></p>
+        </div>
       </div>
     </section>
 
+    <!-- 06 LISTEN / FOLLOW -->
     {links.length > 0 && (
-      <section class="section" id="listen">
+      <section class="section listen-section tone-light" id="listen">
         <div class="container reveal">
-          <div class="section__head">
-            <p class="section__label">LISTEN</p>
-            <h2 class="section__title">{m.listenTitle}</h2>
-          </div>
+          <p class="section__label">LISTEN / FOLLOW</p>
+          <h2 class="listen-section__title">{t.listenTitle.map((line) => <span>{line}</span>)}</h2>
           <ul class="listen">
             {links.map((link) => (
               <li>
@@ -132,81 +202,89 @@ const tonightPlay = tonight ? `${tonight.kind ?? 'video'}:${tonight.id}` : '';
 </BaseLayout>
 
 <style>
+  /* ---------- 共通 ---------- */
+  /* 写真を枠いっぱいに敷く。--fx はスマホで切り抜く横位置。PCは中央 */
+  .cover,
+  .hero__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--fx, 50%) center;
+  }
+  @media (min-width: 48rem) {
+    .cover, .hero__img { object-position: center 30%; }
+  }
+
+  /* 文を1行ずつ浮かび上がらせる。.reveal は表示のきっかけにだけ使う */
+  .stagger.reveal { opacity: 1; transform: none; }
+  .stagger .line {
+    display: block;
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(0.8rem);
+    transition: opacity 1.6s ease, filter 1.6s ease, transform 1.6s ease;
+    transition-delay: calc(var(--i, 0) * 0.45s);
+  }
+  .stagger.is-visible .line { opacity: 1; filter: none; transform: none; }
+
+  .eyebrow {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.4em;
+    color: var(--amber);
+    margin: 0 0 1.75rem;
+  }
+
+  /* パララックスの係数。スマホでは写真を動かさず、フェードだけにする */
+  .home {
+    --k-hero: 0.35;
+    --k-text: -0.18;
+    --k-section: 9%;
+    --amp: 1;
+  }
+  @media (max-width: 47.99rem) {
+    .home { --k-hero: 0; --k-text: 0; --k-section: 0%; --amp: 0.4; }
+  }
+
+  /* ---------- 01 HERO ---------- */
   .hero {
     position: relative;
     min-height: 100svh;
     display: flex;
     align-items: flex-end;
-    padding-block: 9rem 7rem;
+    padding-block: 9rem 6.5rem;
     overflow: hidden;
+    color: var(--on-image);
   }
-  /* --hs はスクリプトが入れるスクロール量(px)。各層はそれに係数を掛けた分だけ下へずらし、
-     画面上の見かけの速さを 背景 < 人物 < 文字 にして奥行きを出す。
-     人物を背景より速く上げると、背景側に残った人物は切り抜きの下に隠れたままになる。 */
-  .hero {
-    --k-bg: 0.45;
-    --k-person: 0.2;
-    --k-text: -0.25;
+  @media (min-width: 48rem) {
+    .hero { align-items: center; padding-block: 8rem; }
   }
-  @media (max-width: 47.99rem) {
-    .hero { --k-bg: 0.3; --k-person: 0.12; --k-text: -0.15; }
+  .hero__media { position: absolute; inset: 0; overflow: hidden; }
+  .hero__shift,
+  .hero__zoom { position: absolute; inset: 0; }
+  .hero__shift { transform: translate3d(0, calc(var(--hs, 0) * var(--k-hero) * 1px), 0); will-change: transform; }
+  /* 開いた瞬間に写真が浮かび、そのまま長い時間をかけてわずかに引いていく */
+  .hero__zoom { animation: hero-zoom 14s cubic-bezier(0.2, 0.6, 0.2, 1) both; }
+  .hero__img { animation: fade-in 2.6s ease both; }
+  @keyframes hero-zoom {
+    from { transform: scale(1.12); }
+    to { transform: scale(1.02); }
   }
-  .hero__art {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    /* 下端は写真ごと透明に溶かし、後ろの夜空の色へ自然につなぐ */
-    -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
-    mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
-  }
-  .hero__layer {
-    position: absolute;
-    inset: 0;
-    will-change: transform;
-  }
-  .hero__layer--bg { transform: translate3d(0, calc(var(--hs, 0) * var(--k-bg) * 1px), 0); }
-  .hero__layer--person { transform: translate3d(0, calc(var(--hs, 0) * var(--k-person) * 1px), 0); }
-  .hero__img {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center 20%;
-  }
-  /* 画像を外した場合は none に落ちて暗幕だけが残る */
-  .hero__layer--bg .hero__img {
-    background-image: var(--hero-image, none);
-    animation: hero-bg-in 3.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  }
-  .hero__layer--person .hero__img {
-    background-image: var(--hero-person, none);
-    animation: hero-person-in 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  }
-  /* 開いた瞬間、夜景がゆっくり引いていき、人物が少し遅れて手前に浮かぶ */
-  @keyframes hero-bg-in {
-    from { transform: scale(1.08); opacity: 0; }
-    to { transform: none; opacity: 1; }
-  }
-  @keyframes hero-person-in {
-    from { transform: translateY(1.5rem); opacity: 0; }
-    to { transform: none; opacity: 1; }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
   .hero__scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, var(--hero-scrim-near) 0%, var(--hero-scrim-far) 55%);
+    background: linear-gradient(180deg, var(--scrim-night-soft) 0%, var(--scrim-night-none) 30%, var(--scrim-night) 72%, var(--bg-deep) 100%);
   }
-  /* 横長のPC幅では暗幕をコピーの乗る左下だけに寄せ、顔のある中央〜右上は薄くする */
+  /* PCは人物が右、空いた左側にコピーを置く */
   @media (min-width: 48rem) {
-    .hero__img { background-position: center 25%; }
-    .hero__layer--bg .hero__img { background-image: var(--hero-image-desktop, var(--hero-image, none)); }
-    .hero__layer--person .hero__img { background-image: var(--hero-person-desktop, var(--hero-person, none)); }
     .hero__scrim {
-      background: linear-gradient(
-        to top right,
-        var(--hero-scrim-strong) 0%,
-        var(--hero-scrim-mid) 45%,
-        var(--hero-scrim-soft) 100%
-      );
+      background:
+        linear-gradient(180deg, var(--scrim-night-none) 70%, var(--bg-deep) 100%),
+        linear-gradient(90deg, var(--scrim-night) 0%, var(--scrim-night-soft) 45%, var(--scrim-night-none) 70%);
     }
   }
   .hero__body {
@@ -214,85 +292,60 @@ const tonightPlay = tonight ? `${tonight.kind ?? 'video'}:${tonight.id}` : '';
     transform: translate3d(0, calc(var(--hs, 0) * var(--k-text) * 1px), 0);
     opacity: var(--hero-fade, 1);
   }
-  .hero__meta,
-  .hero__scroll { opacity: var(--hero-fade, 1); }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero__layer, .hero__body { transform: none; }
-    .hero__img { animation: none; }
-  }
-
-  /* ⑤ 夜空。深夜(body の背景)の上に、夕暮れと明け方の色を重ねて濃さだけを変える */
-  .sky {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-  }
-  .sky > div {
-    position: absolute;
-    inset: 0;
-  }
-  .sky__dusk {
-    background:
-      radial-gradient(90% 55% at 70% 100%, rgba(214, 138, 96, 0.22), transparent 70%),
-      linear-gradient(180deg, transparent 0%, rgba(74, 42, 78, 0.55) 100%);
-    opacity: var(--dusk, 1);
-  }
-  .sky__dawn {
-    background:
-      radial-gradient(100% 60% at 30% 100%, rgba(238, 168, 170, 0.2), transparent 70%),
-      linear-gradient(180deg, transparent 0%, rgba(70, 98, 150, 0.5) 100%);
-    opacity: var(--dawn, 0);
-  }
-  /* 動きを減らす設定では深夜のまま固定する */
-  @media (prefers-reduced-motion: reduce) {
-    .sky { display: none; }
+  .hero__body > * { animation: rise-in 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .hero__label { animation-delay: 0.9s; }
+  .hero__copy { animation-delay: 1.3s; }
+  .hero__sub { animation-delay: 1.9s; }
+  .hero__cta { animation-delay: 2.4s; }
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(1.25rem); filter: blur(6px); }
+    to { opacity: 1; transform: none; filter: none; }
   }
   .hero__label {
     font-family: var(--font-display);
     font-size: 0.8rem;
-    letter-spacing: 0.36em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin: 0 0 1.75rem;
-  }
-  .hero__brand {
-    font-family: var(--font-display);
-    font-size: clamp(2.75rem, 11vw, 8rem);
-    font-weight: 300;
-    line-height: 1;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.5em;
+    color: var(--amber);
     margin: 0 0 1.75rem;
   }
   .hero__copy {
-    font-size: clamp(1.05rem, 3.4vw, 1.5rem);
+    font-size: clamp(1.45rem, 6.2vw, 3rem);
     font-weight: 300;
-    line-height: 2;
+    line-height: 1.7;
+    letter-spacing: 0.08em;
+    margin: 0 0 1.75rem;
+    max-width: 44rem;
+  }
+  .hero__copy:lang(en) { font-size: clamp(1.45rem, 5vw, 2.6rem); letter-spacing: 0.02em; }
+  .hero__copy span,
+  .hero__sub span,
+  .story__title span,
+  .about__copy span,
+  .music__sub span,
+  .listen-section__title span { display: block; }
+  .hero__sub {
+    font-size: clamp(0.9rem, 2.6vw, 1.05rem);
+    line-height: 2.1;
+    color: var(--on-image-dim);
     margin: 0 0 2.75rem;
   }
-  .hero__play {
+  .hero__cta {
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    gap: 2rem;
-    min-width: min(16rem, 100%);
+    gap: 2.5rem;
+    min-width: min(15rem, 100%);
     padding: 1rem 1.5rem;
-    border: 1px solid var(--line);
-    background: none;
-    color: var(--text);
-    font: inherit;
+    border: 1px solid var(--on-image-dim);
     font-size: 0.85rem;
-    letter-spacing: 0.16em;
-    cursor: pointer;
-    transition: border-color 0.5s ease, color 0.5s ease;
+    letter-spacing: 0.18em;
+    transition: border-color 0.5s ease, color 0.5s ease, background-color 0.5s ease;
   }
-  .hero__play:hover,
-  .hero__play:focus-visible { border-color: var(--accent); color: var(--accent); }
-  .hero__play-arrow { transition: transform 0.5s ease; }
-  .hero__play:hover .hero__play-arrow { transform: translateX(0.25rem); }
+  .hero__cta:hover,
+  .hero__cta:focus-visible { border-color: var(--amber); color: var(--amber); }
+  .hero__cta-arrow { transition: transform 0.5s ease; }
+  .hero__cta:hover .hero__cta-arrow { transform: translateX(0.3rem); }
 
-  /* 右端の縦書き。狭い画面では幅を圧迫するので出さない */
   .hero__meta {
     display: none;
     position: absolute;
@@ -303,12 +356,10 @@ const tonightPlay = tonight ? `${tonight.kind ?? 'video'}:${tonight.id}` : '';
     font-family: var(--font-display);
     font-size: 0.7rem;
     letter-spacing: 0.3em;
-    color: var(--text-dim);
+    color: var(--on-image-dim);
+    opacity: var(--hero-fade, 1);
   }
-  @media (min-width: 48rem) {
-    .hero__meta { display: block; }
-  }
-
+  @media (min-width: 48rem) { .hero__meta { display: block; } }
   .hero__scroll {
     position: absolute;
     left: 50%;
@@ -321,81 +372,388 @@ const tonightPlay = tonight ? `${tonight.kind ?? 'video'}:${tonight.id}` : '';
     font-family: var(--font-display);
     font-size: 0.65rem;
     letter-spacing: 0.3em;
-    color: var(--text-dim);
+    color: var(--on-image-dim);
+    opacity: var(--hero-fade, 1);
   }
   .hero__scroll::after {
     content: "";
     width: 1px;
     height: 3rem;
-    background: var(--line);
+    background: var(--on-image-dim);
     animation: scroll-hint 2.8s ease-in-out infinite;
   }
   @keyframes scroll-hint {
     0%, 100% { opacity: 0.3; transform: scaleY(0.6); transform-origin: top; }
     50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .hero__scroll::after { animation: none; opacity: 0.6; }
+
+  /* ---------- 02 OUR STORY ---------- */
+  .story {
+    position: relative;
+    min-height: 115svh;
+    display: flex;
+    align-items: center;
+    padding-block: 8rem;
+    overflow: hidden;
+    color: var(--on-image);
+    background: var(--bg-deep);
+  }
+  .story__media { position: absolute; inset: -12% 0; }
+  .parallax {
+    position: absolute;
+    inset: 0;
+    transform: translate3d(0, calc(var(--pp, 0) * var(--k-section)), 0);
+    will-change: transform;
+  }
+  .story__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--scrim-night-none) 22%, var(--scrim-night-none) 78%, var(--bg-deep) 100%),
+      linear-gradient(0deg, var(--scrim-night), var(--scrim-night-soft));
+  }
+  @media (min-width: 48rem) {
+    .story__scrim {
+      background:
+        linear-gradient(180deg, var(--bg-deep) 0%, var(--scrim-night-none) 22%, var(--scrim-night-none) 78%, var(--bg-deep) 100%),
+        linear-gradient(90deg, var(--scrim-night) 0%, var(--scrim-night-soft) 50%, var(--scrim-night-none) 75%);
+    }
+  }
+  .story__body { position: relative; }
+  .story__title {
+    font-size: clamp(1.4rem, 5.4vw, 2.6rem);
+    font-weight: 300;
+    line-height: 1.7;
+    letter-spacing: 0.08em;
+    margin: 0 0 2.5rem;
+  }
+  .story__lines {
+    margin: 0;
+    font-size: clamp(0.95rem, 3vw, 1.15rem);
+    line-height: 2.5;
+    color: var(--on-image-dim);
   }
 
-  .words { text-align: center; padding-block: clamp(6rem, 16vw, 11rem); }
-  .words p {
-    font-size: clamp(1.1rem, 4vw, 1.5rem);
-    line-height: 2.6;
-    margin: 0 0 2rem;
+  /* ---------- 03 MEMORIES ---------- */
+  /* 既定（JSなし・動きを減らす設定）は写真を縦に並べるだけ */
+  .memories { position: relative; background: var(--bg-deep); color: var(--on-image); }
+  .scene {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
   }
-  /* ③ 段落ごとの .reveal は表示のきっかけにだけ使い、中の1行ずつを霧が晴れるように出す */
-  .words p.reveal { opacity: 1; transform: none; }
-  .words__line {
+  .scene__media { position: absolute; inset: 0; overflow: hidden; }
+  .scene__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--scrim-night-none) 35%, var(--scrim-night) 100%);
+  }
+  @media (min-width: 48rem) {
+    .scene__scrim {
+      background:
+        linear-gradient(180deg, var(--scrim-night-none) 45%, var(--scrim-night) 100%),
+        radial-gradient(120% 90% at 50% 50%, var(--scrim-night-none) 40%, var(--scrim-night-soft) 100%);
+    }
+  }
+  .scene__body { position: relative; padding-block: 6rem 5rem; }
+  .scene__copy {
+    margin: 0;
+    font-size: clamp(1.3rem, 5vw, 2.3rem);
+    font-weight: 300;
+    line-height: 1.8;
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 2rem var(--scrim-night);
+  }
+  .scene__line { display: block; }
+  .scene__no {
     display: block;
-    opacity: 0;
-    filter: blur(8px);
-    transform: translateY(0.75rem);
-    transition: opacity 1.6s ease, filter 1.6s ease, transform 1.6s ease;
-    transition-delay: calc(var(--i) * 0.55s);
+    margin-bottom: 1.5rem;
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    letter-spacing: 0.4em;
+    color: var(--amber);
   }
-  .words p.is-visible .words__line { opacity: 1; filter: none; transform: none; }
-  @media (prefers-reduced-motion: reduce) {
-    .words__line { opacity: 1; filter: none; transform: none; transition: none; }
+  @media (min-width: 48rem) {
+    .scene--right .scene__copy { width: fit-content; margin-left: auto; text-align: right; }
+  }
+  /* 最後のシーンは朝。言葉を大きく置く。スマホは中央、PCは人物のいない左側 */
+  .scene--dawn { text-align: center; }
+  @media (min-width: 48rem) {
+    .scene--dawn { align-items: center; text-align: left; }
+  }
+  .scene--dawn .scene__copy { font-size: clamp(1.7rem, 5.4vw, 3rem); }
+  .scene--dawn .scene__scrim {
+    background: linear-gradient(180deg, var(--scrim-night-none) 40%, var(--scrim-night-soft) 100%);
+  }
+  .memories__dawn { display: none; }
+
+  /* JSが動く環境：ステージを画面に貼り付け、スクロール量（--u）で写真と言葉を入れ替える */
+  .memories.is-cinema { height: calc((var(--n) * 100 + 100) * 1svh); }
+  .is-cinema .memories__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+  }
+  .is-cinema .scene {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    opacity: var(--img-o, 0);
+  }
+  .is-cinema .scene:first-child { opacity: 1; }
+  .is-cinema .scene__copy {
+    opacity: var(--cap-o, 0);
+    transform: translate3d(0, calc((1 - var(--cap-in, 0)) * 1.5rem), 0);
+    filter: blur(calc((1 - var(--cap-in, 0)) * 6px));
+  }
+  .is-cinema .scene__img { will-change: transform; }
+  /* Scene 1 記憶のはじまり：ゆっくり近づく */
+  .is-cinema .scene--zoom .scene__img { transform: scale(calc(1.14 - var(--u, 0) * 0.1 * var(--amp))); }
+  /* Scene 2 言えなかった想い：写真はほぼ止め、言葉だけが流れていく */
+  .is-cinema .scene--still .scene__img { transform: scale(1.04); }
+  .is-cinema .scene--still .scene__copy {
+    transform: translate3d(0, calc((0.45 - var(--u, 0)) * 28svh * var(--amp)), 0);
+  }
+  /* Scene 3 思い出の街：街をたどるように横へ流れる */
+  .is-cinema .scene--pan .scene__img {
+    transform: scale(1.12) translate3d(calc((0.5 - var(--u, 0)) * 5% * var(--amp)), 0, 0);
+  }
+  /* Scene 4 受け止める時間：動きを抑え、光を少しずつ柔らかく明るく */
+  .is-cinema .scene--soft .scene__img {
+    transform: scale(calc(1.06 - var(--u, 0) * 0.03));
+    filter: brightness(calc(0.82 + var(--u, 0) * 0.22)) saturate(calc(0.9 + var(--u, 0) * 0.1));
+  }
+  /* Scene 5 優しい記憶へ：夜の色が抜けて、朝の光が満ちる */
+  .is-cinema .scene--dawn .scene__img {
+    transform: scale(calc(1.1 - var(--u, 0) * 0.08));
+    filter: brightness(calc(0.75 + var(--u, 0) * 0.3));
+  }
+  .is-cinema .memories__dawn {
+    display: block;
+    position: absolute;
+    inset: auto 0 0;
+    height: 45%;
+    background: linear-gradient(180deg, var(--morning-dawn-fade), var(--dawn-1));
+    opacity: var(--end, 0);
+    pointer-events: none;
   }
 
-  .about p { max-width: 34rem; }
+  /* ---------- 04 MUSIC ---------- */
+  .music {
+    background:
+      radial-gradient(80% 50% at 80% 0%, var(--amber-glow), transparent 70%),
+      linear-gradient(180deg, var(--dawn-1) 0%, var(--dawn-2) 100%);
+  }
+  .music__sub { margin: 1.5rem 0 0; color: var(--text-dim); line-height: 2.1; }
+  .feature {
+    display: grid;
+    gap: 1.75rem;
+    margin-bottom: 5rem;
+  }
+  @media (min-width: 48rem) {
+    .feature { grid-template-columns: 1.5fr 1fr; gap: 3rem; align-items: end; }
+  }
+  .feature__art {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    padding: 0;
+    border: none;
+    overflow: hidden;
+    background: var(--bg-deep);
+    cursor: pointer;
+    box-shadow: 0 2rem 3rem -2rem var(--scrim-night);
+  }
+  .feature__art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+  }
+  .feature__art:hover img,
+  .feature__art:focus-visible img { transform: scale(1.03); }
+  .feature__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 1.8rem;
+    color: var(--on-image);
+    text-shadow: 0 0 1rem var(--scrim-night);
+  }
+  .feature__label {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    margin: 0 0 1rem;
+  }
+  .feature__title {
+    font-size: clamp(1.05rem, 2.6vw, 1.35rem);
+    font-weight: 400;
+    line-height: 1.8;
+    margin: 0 0 2rem;
+    overflow-wrap: anywhere;
+  }
+  .feature__button {
+    display: inline-flex;
+    gap: 2rem;
+    padding: 0.85rem 1.4rem;
+    border: 1px solid var(--text);
+    background: none;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.82rem;
+    letter-spacing: 0.18em;
+    cursor: pointer;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+  .feature__button:hover,
+  .feature__button:focus-visible { background: var(--text); color: var(--dawn-2); }
+  .music__block { margin-bottom: 5rem; }
+  .music__heading {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    margin: 0 0 1.75rem;
+  }
+  .streams {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .streams a {
+    display: inline-flex;
+    gap: 0.6rem;
+    padding: 0.7rem 1.25rem;
+    border: 1px solid var(--line);
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+    transition: border-color 0.4s ease, color 0.4s ease;
+  }
+  .streams a:hover,
+  .streams a:focus-visible { border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- 05 ABOUT ---------- */
+  .about { background: linear-gradient(180deg, var(--dawn-2) 0%, var(--dawn-2) 100%); }
+  .about__grid { display: grid; gap: 3rem; }
+  @media (min-width: 48rem) {
+    .about__grid { grid-template-columns: 1fr 1.1fr; gap: 5rem; align-items: center; }
+  }
+  .about__art {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    box-shadow: 0 2.5rem 4rem -2.5rem var(--scrim-night);
+  }
+  .about__art :global(img) { object-position: center 30%; }
+  /* 写真と文章を少しずらして浮かび上がらせる */
+  .about__text { transition-delay: 0.35s; }
+  .about__copy {
+    font-size: clamp(1.4rem, 4.4vw, 2.2rem);
+    font-weight: 300;
+    line-height: 1.8;
+    letter-spacing: 0.06em;
+    margin: 2rem 0 2.5rem;
+  }
+  .about__text > p:not(.section__label):not(.more) { margin: 0 0 1.6rem; max-width: 32rem; }
+
+  /* ---------- 06 LISTEN / FOLLOW ---------- */
+  .listen-section {
+    background: linear-gradient(180deg, var(--dawn-2) 0%, var(--dawn-3) 100%);
+    text-align: center;
+  }
+  .listen-section .section__label { display: inline-block; padding-inline: 1.5rem; }
+  .listen-section__title {
+    font-size: clamp(1.3rem, 4.4vw, 2.1rem);
+    font-weight: 300;
+    line-height: 1.8;
+    letter-spacing: 0.06em;
+    margin: 1.5rem 0 3rem;
+  }
+  .listen-section .listen { margin-inline: auto; text-align: left; }
+
+  /* ---------- 動きを減らす設定 ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .hero__shift, .hero__body, .parallax { transform: none; }
+    .hero__zoom, .hero__img, .hero__body > *, .hero__scroll::after { animation: none; }
+    .stagger .line { opacity: 1; filter: none; transform: none; transition: none; }
+  }
 </style>
 
 <script>
-  // 右端の縦書きに閲覧者の現在時刻を出す。JSが動かない環境では時刻だけ出ない。
+  // 右端の縦書きに閲覧者の現在時刻を出す
   const clock = document.getElementById('hero-clock');
   if (clock) {
     const render = () => {
       const now = new Date();
-      const hh = String(now.getHours()).padStart(2, '0');
-      const mm = String(now.getMinutes()).padStart(2, '0');
-      clock.textContent = `${hh}:${mm}`;
+      clock.textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     };
     render();
     setInterval(render, 30000);
   }
 
-  // スクロール量を CSS 変数に流すだけにして、動きの係数は CSS 側で決める。
-  // 動きを減らす設定の人には何もしない（CSS の既定値で静止した状態になる）。
-  const heroEl = document.querySelector<HTMLElement>('.hero');
-  const root = document.documentElement;
+  // スクロール量を CSS 変数に流すだけにして、動きの大きさは CSS 側で決める。
+  // 動きを減らす設定の人には何もしない（CSS の既定値で静止した表示になる）。
   const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
-  if (heroEl && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const parallaxSections = [...document.querySelectorAll<HTMLElement>('[data-parallax]')];
+  const memories = document.querySelector<HTMLElement>('.memories');
+  const scenes = [...document.querySelectorAll<HTMLElement>('[data-scene]')];
+
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    memories?.classList.add('is-cinema');
+
     let ticking = false;
     const update = () => {
       ticking = false;
       const y = window.scrollY;
-      const h = heroEl.offsetHeight;
-      // ヒーローが画面外に出たら層を動かす必要はない
-      if (y <= h) {
-        heroEl.style.setProperty('--hs', String(y));
-        heroEl.style.setProperty('--hero-fade', String(1 - clamp01(y / (h * 0.7))));
+      const vh = window.innerHeight;
+
+      if (hero && y <= hero.offsetHeight) {
+        hero.style.setProperty('--hs', String(y));
+        hero.style.setProperty('--hero-fade', String(1 - clamp01(y / (hero.offsetHeight * 0.65))));
       }
-      // ページ全体の進み具合 0→1 で 夕暮れ → 深夜 → 明け方
-      const p = clamp01(y / Math.max(1, root.scrollHeight - window.innerHeight));
-      root.style.setProperty('--dusk', String(clamp01(1 - p * 2.2)));
-      root.style.setProperty('--dawn', String(clamp01((p - 0.55) / 0.4)));
+
+      // セクションの中心が画面中央より下なら負、上なら正（-1〜1）
+      for (const section of parallaxSections) {
+        const rect = section.getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > vh) continue;
+        const pp = (vh / 2 - (rect.top + rect.height / 2)) / (vh / 2 + rect.height / 2);
+        section.style.setProperty('--pp', pp.toFixed(4));
+      }
+
+      if (memories && scenes.length) {
+        const rect = memories.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < vh) {
+          // 0〜シーン数。整数部が今のシーン、小数部がそのシーンの進み具合
+          const distance = Math.max(1, memories.offsetHeight - vh);
+          const p = clamp01(-rect.top / distance) * scenes.length;
+          scenes.forEach((scene, i) => {
+            const u = p - i;
+            const last = i === scenes.length - 1;
+            // 次の写真は、前のシーンの終わり 30% をかけて重なるように現れる
+            const imgO = i === 0 ? 1 : clamp01((u + 0.3) / 0.3);
+            const capIn = clamp01((u - 0.05) / 0.25);
+            const capOut = last ? 1 : clamp01((0.82 - u) / 0.14);
+            scene.style.setProperty('--u', Math.min(1.3, Math.max(-0.3, u)).toFixed(4));
+            scene.style.setProperty('--img-o', imgO.toFixed(3));
+            scene.style.setProperty('--cap-in', capIn.toFixed(3));
+            scene.style.setProperty('--cap-o', Math.min(capIn, capOut).toFixed(3));
+          });
+          // 最後のシーンの後半で、下から朝の色がにじむ
+          memories.style.setProperty('--end', clamp01((p - (scenes.length - 0.45)) / 0.45).toFixed(3));
+        }
+      }
     };
     const onScroll = () => {
       if (!ticking) {

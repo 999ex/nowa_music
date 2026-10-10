@@ -1,7 +1,7 @@
 ---
 import { getImage } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import portraitSource from '../../assets/hero.png';
+import portraitSource from '../../assets/brand/about.webp';
 import { activeLinks } from '../../lib/links.js';
 import { messages } from '../../lib/i18n.js';
 
@@ -10,7 +10,7 @@ const m = messages[lang].about;
 
 const links = activeLinks();
 
-// 人物写真はトップと同じ画像。ビルド時にwebpへ変換・縮小する
+// 人物写真はトップのABOUTと同じ画像。ビルド時にwebpへ変換・縮小する
 const portrait = await getImage({ src: portraitSource, format: 'webp', width: 900, quality: 78 });
 ---
 
