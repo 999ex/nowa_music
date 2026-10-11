@@ -29,6 +29,7 @@ const portrait = await getImage({ src: portraitSource, format: 'webp', width: 90
       <div class="container profile">
         <div class="profile__art reveal" style={`--profile-image: url(${portrait.src})`}></div>
         <div class="profile__text reveal">
+          <p class="profile__lead">{m.lead}</p>
           {m.paragraphs.map((lines) => (
             <p>{lines.map((line, i) => (<>{i > 0 && <br />}{line}</>))}</p>
           ))}
@@ -91,6 +92,13 @@ const portrait = await getImage({ src: portraitSource, format: 'webp', width: 90
     background-position: center 25%;
   }
   .profile__text p { margin: 0 0 2rem; }
+  .profile__text .profile__lead {
+    font-size: clamp(1.25rem, 3.6vw, 1.7rem);
+    font-weight: 300;
+    line-height: 1.8;
+    letter-spacing: 0.06em;
+    margin-bottom: 2.75rem;
+  }
 
   /* プロフィール情報。控えめな罫線で区切る */
   .facts {
