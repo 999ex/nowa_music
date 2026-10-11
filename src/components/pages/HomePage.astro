@@ -4,7 +4,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import AlbumShelf from '../AlbumShelf.astro';
 import TrackList from '../TrackList.astro';
 import heroImage from '../../assets/brand/hero.webp';
-import storyImage from '../../assets/brand/story.webp';
 import memory01 from '../../assets/brand/memory-01.webp';
 import memory02 from '../../assets/brand/memory-02.webp';
 import memory03 from '../../assets/brand/memory-03.webp';
@@ -27,7 +26,6 @@ const PHOTO = { format: 'webp', quality: 80, widths: [960, 1672], sizes: '100vw'
 // fx = スマホの縦長画面で切り抜くときの横位置。人物の顔が画面の中央付近に来るよう写真ごとに決めている。
 const slides = [
   { src: heroImage, fx: 90 },
-  { src: storyImage, fx: 60 },
   { src: memory01, fx: 43 },
   { src: memory02, fx: 53 },
   { src: memory03, fx: 41 },
