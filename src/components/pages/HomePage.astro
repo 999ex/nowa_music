@@ -10,6 +10,7 @@ import memory02 from '../../assets/brand/memory-02.webp';
 import memory03 from '../../assets/brand/memory-03.webp';
 import memory04 from '../../assets/brand/memory-04.webp';
 import memory05 from '../../assets/brand/memory-05.webp';
+import memory06 from '../../assets/brand/memory-06.webp';
 import aboutImage from '../../assets/brand/about.webp';
 import raw from '../../data/youtube.json';
 import { buildCatalog } from '../../lib/catalog.js';
@@ -25,15 +26,16 @@ const PHOTO = { format: 'webp', quality: 80, widths: [960, 1672], sizes: '100vw'
 // 背景のスライド。時間でゆっくり入れ替わり、スクロールには連動させない（スクロールを重くしないため）。
 // fx = スマホの縦長画面で切り抜くときの横位置。人物の顔が画面の中央付近に来るよう写真ごとに決めている。
 const slides = [
-  { src: heroImage, fx: 77 },
-  { src: storyImage, fx: 82 },
-  { src: memory01, fx: 68 },
-  { src: memory02, fx: 62 },
-  { src: memory03, fx: 37 },
-  { src: memory04, fx: 50 },
+  { src: heroImage, fx: 90 },
+  { src: storyImage, fx: 60 },
+  { src: memory01, fx: 43 },
+  { src: memory02, fx: 53 },
+  { src: memory03, fx: 41 },
+  { src: memory04, fx: 37 },
+  { src: memory06, fx: 85 },
 ];
 // 言葉が最後の一文まで来たら、この朝の写真に切り替えて夜を明けさせる
-const dawnSlide = { src: memory05, fx: 70 };
+const dawnSlide = { src: memory05, fx: 46 };
 
 const { albums, tracks } = buildCatalog(raw);
 const latest = albums[0];
