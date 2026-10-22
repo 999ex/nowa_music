@@ -26,9 +26,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+          check-latest: true
           cache: npm
 
       - run: npm ci
+
+      - name: 依存部品のセキュリティ確認
+        run: npm audit --audit-level=high
 
       - name: テスト
         run: npm test
