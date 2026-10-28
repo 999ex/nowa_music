@@ -1,11 +1,12 @@
-/** 対応言語。ja が既定（URLに接頭辞なし）、en は /en/ 配下。 */
-export const LANGS = ['ja', 'en', 'ko'];
+/** 対応言語。ja が既定（URLに接頭辞なし）、ほかは /en/ /ko/ /zh-tw/ 配下。 */
+export const LANGS = ['ja', 'en', 'ko', 'zh-tw'];
 
 /** 言語切り替えの表示名と og:locale。 */
 export const LANG_META = {
   ja: { short: 'JA', name: '日本語', locale: 'ja_JP' },
   en: { short: 'EN', name: 'English', locale: 'en_US' },
   ko: { short: 'KO', name: '한국어', locale: 'ko_KR' },
+  'zh-tw': { short: '繁中', name: '繁體中文', locale: 'zh_TW' },
 };
 export const DEFAULT_LANG = 'ja';
 
@@ -15,7 +16,7 @@ export const langFromPath = (pathname) =>
 
 /** 言語接頭辞を外したパス（/en/music/ → /music/）。 */
 export const stripLang = (pathname) => {
-  const stripped = pathname.replace(/^\/(en|ko)(?=\/|$)/, '');
+  const stripped = pathname.replace(/^\/(en|ko|zh-tw)(?=\/|$)/, '');
   return stripped === '' ? '/' : stripped;
 };
 
@@ -216,6 +217,71 @@ export const messages = {
         ['그리고 문득 찾아온 밤에,', '"그 사랑이 있어서 다행이었다"고 생각할 수 있도록.'],
         ['그런 바람을 담아, 한 곡 한 곡 만들고 있습니다.'],
         ['Nowa Music은 여성 보컬의 오리지널 J-POP 발라드를 중심으로, 사랑 이야기를 그린 곡과 앨범, 영상 작품을 전해 드립니다.'],
+      ],
+    },
+  },
+  'zh-tw': {
+    htmlLang: 'zh-Hant-TW',
+    siteDescription: '把說不出口的心意，化為音樂。Nowa Music 以 J-POP 抒情歌、影像與故事，訴說那些過去的戀情與未能傳達的心意。',
+    nav: { label: '主選單', music: 'MUSIC', about: 'ABOUT', listen: 'LISTEN' },
+    footer: { message: '把說不出口的心意，化為音樂。', links: '外部連結', analytics: '本網站使用 Google Analytics。' },
+    player: { label: '播放器', close: '關閉' },
+    trackCount: (n) => `${n} 首`,
+    home: {
+      heroCopy: ['把說不出口的心意，', '化為音樂。'],
+      heroSub: ['那時，沒能傳達的心情。', '至今仍留在心裡，無法忘記的人。'],
+      heroCta: '聆聽 MUSIC',
+      storyTitle: ['那一天，', '有一句沒能說出口的話。'],
+      storyLines: ['明明喜歡，卻沒能說出口。', '其實，好想留住你。', '那時，如果能再坦率一點就好了。'],
+      scenes: [
+        ['在某個不經意的夜晚，', '會想起一個人。'],
+        ['沒能傳達的話語，', '至今仍留在心裡。'],
+        ['什麼都沒有改變的街道，', '只有那個人不在了。'],
+        ['回不去的時光，', '也曾是珍貴的回憶。'],
+        ['能有那段戀情，', '真好。'],
+      ],
+      musicTitle: '留在心中的，愛情故事。',
+      musicSub: ['讓那時的心情，再一次浮現。', 'Nowa Music 原創 J-POP 抒情歌。'],
+      latest: '最新專輯',
+      albums: '專輯・播放清單',
+      singles: '單曲',
+      playLatest: '播放',
+      allAlbums: '查看所有專輯',
+      aboutCopy: ['就連沒說出口的心意，', '也是曾經愛過的證明。'],
+      aboutBody: [
+        ['Nowa Music 是一個以音樂、影像與故事，描繪過去的戀情與當時未能傳達之心意的藝術家品牌。'],
+        ['無法忘記的人。', '回不去的時光。', '至今仍留在心中，那一天的話語。'],
+        ['輕輕陪伴著那些回憶，讓曾經的傷感，終有一天化為溫柔的記憶。'],
+        ['Nowa Music 想傳遞的，就是這樣的音樂。'],
+      ],
+      readMore: '閱讀更多',
+      listenTitle: ['輕輕陪伴', '你回憶的音樂。'],
+    },
+    music: {
+      title: '能一直播放到夜晚結束的歌。',
+      description: 'Nowa Music 的專輯與最新歌曲。在夜裡靜靜陪伴你的女聲 J-POP 抒情歌。',
+      more: '聆聽更多（YouTube 頻道）',
+    },
+    about: {
+      description: '關於 Nowa Music。在夜裡靜靜陪伴你的女聲 J-POP 抒情歌。',
+      lead: '把說不出口的心意，化為音樂。',
+      facts: [
+        { label: '曲風', value: 'J-POP / 抒情歌 / 女聲' },
+      ],
+      paragraphs: [
+        ['Nowa Music 是一個以音樂、影像與故事，描繪那時的戀情與未能傳達之心意的藝術家品牌。'],
+        ['明明喜歡，卻沒能說出口。', '其實好想留住你，卻笑著說了再見。', '那時，如果能再坦率一點就好了。'],
+        ['也許每個人的心裡，都藏著這樣一個「如果」。'],
+        ['即使時間流逝，仍有無法忘記的人。', '明明是好多年前的事，卻總在不經意間，想起那時的風景。'],
+        ['並不是想回到過去。', '也不是想要忘記。'],
+        ['只是想再一次，輕輕想起那時的自己。'],
+        ['Nowa 的音樂，就是為了這樣的時光而存在。'],
+        ['不必忘記也沒關係。', '不必勉強自己向前看也沒關係。'],
+        ['那些沒說出口的話、沒能實現的戀情，都是曾經珍惜過某個人的證明。'],
+        ['曾經傷感的回憶，終有一天會變成溫柔的記憶。'],
+        ['然後在某個不經意的夜晚，', '能夠想著「有過那段戀情，真好」。'],
+        ['懷著這樣的心願，一首一首地創作。'],
+        ['Nowa Music 以女聲原創 J-POP 抒情歌為主，為你帶來描繪愛情故事的歌曲、專輯與影像作品。'],
       ],
     },
   },

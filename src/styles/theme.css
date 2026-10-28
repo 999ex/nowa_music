@@ -20,7 +20,7 @@
   --font-display: "Cormorant", "Noto Serif JP", "Times New Roman", serif;
   --header-bg: rgba(7, 13, 28, 0.72);
   --header-height: 4.25rem;
-  --font-serif: "Noto Serif JP", "Noto Serif KR", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --font-serif: "Noto Serif JP", "Noto Serif KR", "Noto Serif TC", "Yu Mincho", "Hiragino Mincho ProN", serif;
   --page-max: 68rem;
 
   /* 画像の上に置く文字。明るいセクションでも写真の上は白で読ませる */
@@ -56,6 +56,12 @@
 
 @media (min-width: 48rem) {
   :root { --header-height: 5rem; }
+}
+
+/* 繁體中文のページは台湾の字形で表示する（日本語フォントを先にすると一部の字形が日本式になる） */
+:root:lang(zh-Hant) {
+  --font-serif: "Noto Serif TC", "Noto Serif JP", "PMingLiU", serif;
+  --font-display: "Cormorant", "Noto Serif TC", "Times New Roman", serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
