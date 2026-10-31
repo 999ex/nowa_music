@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { messages, localePath } from '../../lib/i18n.js';
+import { pickText, sortNews, formatDate } from '../../lib/news.js';
+
+const { lang = 'ja' } = Astro.props;
+const m = messages[lang].news;
+const entries = sortNews(await getCollection('news', (e) => !e.data.draft));
+---
+
+<BaseLayout title="NEWS" description={m.description} lang={lang}>
+  <main>
+    <section class="section head">
+      <div class="container">
+        <div class="section__head">
+          <p class="section__label">NEWS</p>
+          <h1 class="section__title page__title">{m.title}</h1>
+        </div>
+        {entries.length > 0 ? (
+          <ul class="news-list">
+            {entries.map((entry) => (
+              <li>
+                <a href={localePath(lang, `/news/${entry.id}/`)}>
+                  <time datetime={entry.data.date}>{formatDate(entry.data.date, lang)}</time>
+                  <span class="news-list__title">{pickText(entry.data.title, lang)}</span>
+                  <span class="news-list__arrow" aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>{m.empty}</p>
+        )}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .head { padding-top: 9rem; }
+  .news-list { list-style: none; margin: 0; padding: 0; max-width: 44rem; border-top: 1px solid var(--line); }
+  .news-list li { border-bottom: 1px solid var(--line); }
+  .news-list a {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.3rem 1rem;
+    padding: 1.25rem 0.25rem;
+    transition: color 0.4s ease;
+  }
+  .news-list a:hover,
+  .news-list a:focus-visible { color: var(--accent); }
+  .news-list time { grid-column: 1; font-size: 0.75rem; letter-spacing: 0.12em; color: var(--text-dim); }
+  .news-list__title { grid-column: 1; line-height: 1.7; }
+  .news-list__arrow { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+</style>

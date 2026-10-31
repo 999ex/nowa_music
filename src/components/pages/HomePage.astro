@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AlbumShelf from '../AlbumShelf.astro';
 import TrackList from '../TrackList.astro';
@@ -15,9 +16,13 @@ import raw from '../../data/youtube.json';
 import { buildCatalog } from '../../lib/catalog.js';
 import { activeLinks } from '../../lib/links.js';
 import { messages, localePath } from '../../lib/i18n.js';
+import { pickText, sortNews } from '../../lib/news.js';
 
 const { lang = 'ja' } = Astro.props;
 const t = messages[lang].home;
+
+// 最初の画面に1行だけ出す最新のお知らせ。無ければ何も出さない
+const [latestNews] = sortNews(await getCollection('news', (e) => !e.data.draft));
 
 // 横長写真はビルド時にwebpの2サイズへ。スマホ(高DPR)でも大きい方が選ばれる
 const PHOTO = { format: 'webp', quality: 80, widths: [960, 1672], sizes: '100vw' } as const;
@@ -69,6 +74,13 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
             <p class="hero__label">NOWA MUSIC</p>
             <h1 class="hero__copy">{t.heroCopy.map((line) => <span>{line}</span>)}</h1>
             <p class="hero__sub">{t.heroSub.map((line) => <span>{line}</span>)}</p>
+            {latestNews && (
+              <a class="hero__news" href={localePath(lang, `/news/${latestNews.id}/`)}>
+                <span class="hero__news-label">NEWS</span>
+                <span class="hero__news-title">{pickText(latestNews.data.title, lang)}</span>
+                <span class="hero__news-arrow" aria-hidden="true">→</span>
+              </a>
+            )}
             <a class="hero__cta" href="#music">
               <span>{t.heroCta}</span>
               <span class="hero__cta-arrow" aria-hidden="true">→</span>
@@ -310,6 +322,7 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
   .hero__label { animation-delay: 0.9s; }
   .hero__copy { animation-delay: 1.3s; }
   .hero__sub { animation-delay: 1.9s; }
+  .hero__news { animation-delay: 2.2s; }
   .hero__cta { animation-delay: 2.4s; }
   @keyframes rise-in {
     from { opacity: 0; transform: translateY(1.25rem); filter: blur(6px); }
@@ -343,6 +356,43 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
     color: var(--on-image-dim);
     margin: 0 0 2.75rem;
   }
+  /* 最新のお知らせ。コピーの邪魔をしないよう小さく置く。長いタイトルは2行までで省略する */
+  .hero__news {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    width: fit-content;
+    max-width: 100%;
+    margin: -1rem 0 1.75rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    color: var(--on-image);
+    text-shadow: 0 0 1.5rem var(--scrim-night);
+  }
+  .hero__news-label {
+    flex: none;
+    padding: 0.15rem 0.55rem;
+    border: 1px solid var(--amber);
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    letter-spacing: 0.24em;
+    color: var(--amber);
+  }
+  .hero__news-title {
+    min-width: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.7;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.4s ease;
+  }
+  .hero__news-arrow { flex: none; color: var(--amber); transition: transform 0.4s ease; }
+  .hero__news:hover .hero__news-title,
+  .hero__news:focus-visible .hero__news-title { border-bottom-color: var(--amber); }
+  .hero__news:hover .hero__news-arrow { transform: translateX(0.25rem); }
+
   .hero__cta {
     display: inline-flex;
     align-items: center;

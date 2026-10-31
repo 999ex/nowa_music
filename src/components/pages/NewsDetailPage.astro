@@ -1,0 +1,185 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { messages, localePath } from '../../lib/i18n.js';
+import { pickText, toParagraphs, formatDate, countryName } from '../../lib/news.js';
+
+const { lang = 'ja', entry } = Astro.props;
+const m = messages[lang].news;
+const { date, title, body, rankings, link } = entry.data;
+
+const heading = pickText(title, lang);
+const paragraphs = toParagraphs(pickText(body, lang));
+const chartName = (key) => m.charts[key] ?? key;
+const rows = (list) =>
+  list.map((r) => ({
+    chart: chartName(r.chart),
+    country: countryName(r.country, lang),
+    rank: m.rank(r.rank),
+    date: r.date ? formatDate(r.date, lang) : null,
+    top: r.rank === 1,
+  }));
+const current = rankings ? rows(rankings.current) : [];
+const past = rankings ? rows(rankings.past) : [];
+const description = paragraphs[0]?.join(' ') ?? m.description;
+---
+
+<BaseLayout title={heading} description={description} lang={lang}>
+  <main>
+    <article class="section news">
+      <div class="container news__inner">
+        <p class="section__label">NEWS</p>
+        <time class="news__date" datetime={date}>{formatDate(date, lang)}</time>
+        <h1 class="news__title">{heading}</h1>
+
+        {paragraphs.length > 0 && (
+          <div class="news__body">
+            {paragraphs.map((lines) => (
+              <p>{lines.map((line, i) => (<>{i > 0 && <br />}{line}</>))}</p>
+            ))}
+          </div>
+        )}
+
+        {rankings && (
+          <section class="chart" aria-label={m.current}>
+            <p class="chart__song">{rankings.song}</p>
+
+            {current.length > 0 && (
+              <>
+                <h2 class="chart__heading">
+                  {m.current}
+                  <span class="chart__asof">{m.asOf(formatDate(rankings.asOf, lang))}</span>
+                </h2>
+                <ul class="chart__list">
+                  {current.map((r) => (
+                    <li class:list={['chart__row', r.top && 'chart__row--top']}>
+                      <span class="chart__rank">{r.rank}</span>
+                      <span class="chart__where">
+                        <span class="chart__country">{r.country}</span>
+                        <span class="chart__name">{r.chart}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {past.length > 0 && (
+              <>
+                <h2 class="chart__heading">{m.past}</h2>
+                <ul class="chart__list">
+                  {past.map((r) => (
+                    <li class="chart__row">
+                      <span class="chart__rank">{r.rank}</span>
+                      <span class="chart__where">
+                        <span class="chart__country">{r.country}</span>
+                        <span class="chart__name">{r.chart}</span>
+                      </span>
+                      {r.date && <span class="chart__date">{r.date}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </section>
+        )}
+
+        {link && (
+          <p class="news__link">
+            <a href={link.url} target="_blank" rel="noopener">
+              <span>{pickText(link.label, lang) || link.url}</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+          </p>
+        )}
+
+        <p class="more"><a href={localePath(lang, '/news/')}>{m.back}</a></p>
+      </div>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .news { padding-top: 9rem; }
+  .news__inner { max-width: 44rem; }
+  .news__date {
+    display: block;
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    color: var(--text-dim);
+    margin-top: 1.5rem;
+  }
+  .news__title {
+    font-size: clamp(1.4rem, 5vw, 2.2rem);
+    font-weight: 300;
+    line-height: 1.6;
+    letter-spacing: 0.04em;
+    margin: 0.75rem 0 2.5rem;
+  }
+  .news__body p { margin: 0 0 1.5rem; }
+
+  .chart {
+    margin-top: 3rem;
+    padding: 2rem 1.5rem;
+    border: 1px solid var(--line);
+    background: var(--bg-glow);
+  }
+  @media (min-width: 48rem) { .chart { padding: 2.5rem; } }
+  .chart__song {
+    font-size: 1.05rem;
+    letter-spacing: 0.08em;
+    margin: 0 0 2rem;
+  }
+  .chart__song::before { content: "♪ "; color: var(--amber); }
+  .chart__heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.24em;
+    color: var(--accent);
+    margin: 0 0 1rem;
+  }
+  .chart__list + .chart__heading { margin-top: 2.5rem; }
+  .chart__asof { font-size: 0.75rem; letter-spacing: 0.1em; color: var(--text-dim); }
+  .chart__list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .chart__row {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: 0.25rem 1rem;
+    align-items: center;
+    padding: 1rem 0.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .chart__rank {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .chart__row--top .chart__rank { color: var(--amber); }
+  .chart__where { display: flex; flex-direction: column; line-height: 1.6; }
+  .chart__country { font-size: 1rem; }
+  .chart__name { font-size: 0.75rem; letter-spacing: 0.06em; color: var(--text-dim); }
+  .chart__date {
+    grid-column: 2;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+
+  .news__link { margin: 3rem 0 0; }
+  .news__link a {
+    display: inline-flex;
+    gap: 1.5rem;
+    padding: 0.9rem 1.4rem;
+    border: 1px solid var(--line);
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    transition: border-color 0.4s ease, color 0.4s ease;
+  }
+  .news__link a:hover,
+  .news__link a:focus-visible { border-color: var(--accent); color: var(--accent); }
+</style>
