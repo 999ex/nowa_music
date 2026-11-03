@@ -71,7 +71,7 @@ export const messages = {
       rank: (n) => `${n}位`,
       back: 'お知らせ一覧へ',
       empty: 'お知らせはまだありません。',
-      charts: { 'itunes-jpop-songs': 'iTunes Store・J-Pop トップソング' },
+      charts: { 'itunes-jpop-songs': 'iTunes Store・J-Pop トップソング', 'itunes-all-songs': 'iTunes Store・ミュージック 総合トップソング' },
     },
     music: {
       title: '夜が終わるまで、流していられる歌。',
@@ -147,7 +147,7 @@ export const messages = {
       rank: (n) => `No.${n}`,
       back: 'All news',
       empty: 'No news yet.',
-      charts: { 'itunes-jpop-songs': 'iTunes Store · J-Pop Top Songs' },
+      charts: { 'itunes-jpop-songs': 'iTunes Store · J-Pop Top Songs', 'itunes-all-songs': 'iTunes Store · All Genres Top Songs' },
     },
     music: {
       title: 'Songs to keep playing until the night ends.',
@@ -223,7 +223,7 @@ export const messages = {
       rank: (n) => `${n}위`,
       back: '소식 목록으로',
       empty: '아직 소식이 없습니다.',
-      charts: { 'itunes-jpop-songs': 'iTunes Store · J-Pop 톱 송' },
+      charts: { 'itunes-jpop-songs': 'iTunes Store · J-Pop 톱 송', 'itunes-all-songs': 'iTunes Store · 전체 장르 톱 송' },
     },
     music: {
       title: '밤이 끝날 때까지, 틀어 둘 수 있는 노래.',
@@ -299,7 +299,7 @@ export const messages = {
       rank: (n) => `第 ${n} 名`,
       back: '返回消息列表',
       empty: '目前尚無消息。',
-      charts: { 'itunes-jpop-songs': 'iTunes Store・J-Pop 熱門歌曲' },
+      charts: { 'itunes-jpop-songs': 'iTunes Store・J-Pop 熱門歌曲', 'itunes-all-songs': 'iTunes Store・全部類型 熱門歌曲' },
     },
     music: {
       title: '能一直播放到夜晚結束的歌。',

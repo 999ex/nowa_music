@@ -65,10 +65,13 @@ const description = paragraphs[0]?.join(' ') ?? m.description;
 
             {past.length > 0 && (
               <>
-                <h2 class="chart__heading">{m.past}</h2>
+                <h2 class="chart__heading">
+                  {m.past}
+                  {current.length === 0 && <span class="chart__asof">{m.asOf(formatDate(rankings.asOf, lang))}</span>}
+                </h2>
                 <ul class="chart__list">
                   {past.map((r) => (
-                    <li class="chart__row">
+                    <li class:list={['chart__row', r.top && 'chart__row--top']}>
                       <span class="chart__rank">{r.rank}</span>
                       <span class="chart__where">
                         <span class="chart__country">{r.country}</span>
