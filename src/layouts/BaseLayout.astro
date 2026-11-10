@@ -3,6 +3,7 @@ import '../styles/theme.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Player from '../components/Player.astro';
+import LangSuggest from '../components/LangSuggest.astro';
 import { messages, stripLang, localePath, LANGS, LANG_META } from '../lib/i18n.js';
 import { MEASUREMENT_ID, ANALYTICS_HOSTNAME, isAnalyticsEnabled } from '../lib/analytics.js';
 
@@ -62,6 +63,21 @@ const analyticsEnabled = isAnalyticsEnabled(import.meta.env.PROD);
     <slot />
     <Footer lang={lang} tone={tone} />
     <Player lang={lang} />
+    <LangSuggest lang={lang} />
+
+    <script>
+      // 主要ボタンのクリックを記録する（どの場所の「聴く」ボタンが効いているかを見るため）。
+      // 外部サイトへのクリック自体はGA4の自動計測でも取れるが、押された場所までは分からない
+      document.addEventListener('click', (event) => {
+        const el = (event.target as Element)?.closest?.('[data-cta]') as HTMLAnchorElement | null;
+        if (!el) return;
+        window.gtag?.('event', 'cta_click', {
+          cta_location: el.dataset.cta,
+          link_text: el.textContent?.trim().slice(0, 40),
+          link_url: el.href,
+        });
+      });
+    </script>
 
     <script>
       // .reveal を画面に入ったら表示する

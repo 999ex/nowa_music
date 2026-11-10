@@ -111,6 +111,14 @@ const m = messages[lang].player;
       event.preventDefault();
       const [kind, id] = trigger.dataset.play.split(':');
       open(kind, id, trigger.dataset.title);
+      // サイト内で再生された回数と、どこのボタンから再生されたかを記録する
+      // （埋め込み再生はGA4の自動計測では取れないため）
+      window.gtag?.('event', 'play_video', {
+        video_kind: kind,
+        video_id: id,
+        video_title: (trigger.dataset.title || '').slice(0, 100),
+        play_location: trigger.dataset.playLocation || trigger.closest('section[id]')?.id || location.pathname,
+      });
       return;
     }
     if (event.target.closest('[data-player-close]')) close();

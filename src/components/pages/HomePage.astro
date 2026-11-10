@@ -81,10 +81,26 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
                 <span class="hero__news-arrow" aria-hidden="true">→</span>
               </a>
             )}
-            <a class="hero__cta" href="#music">
-              <span>{t.heroCta}</span>
-              <span class="hero__cta-arrow" aria-hidden="true">→</span>
-            </a>
+            <!-- 来た人がすぐ聴けるように、最新作の再生を最初の画面に置く（多くの人がトップだけ見て帰るため） -->
+            {latest ? (
+              <button class="hero__cta" type="button" data-play={playId(latest)} data-title={latest.title} data-play-location="hero">
+                <span><span class="hero__cta-icon" aria-hidden="true">▶</span>{t.heroPlay}</span>
+                <span class="hero__cta-arrow" aria-hidden="true">→</span>
+              </button>
+            ) : (
+              <a class="hero__cta" href="#music">
+                <span>{t.heroCta}</span>
+                <span class="hero__cta-arrow" aria-hidden="true">→</span>
+              </a>
+            )}
+            {streamLinks.length > 0 && (
+              <ul class="hero__streams">
+                {streamLinks.map((link) => (
+                  <li><a href={link.url} target="_blank" rel="noopener" data-cta="hero">{link.label}<span aria-hidden="true">↗</span></a></li>
+                ))}
+              </ul>
+            )}
+            {latest && <a class="hero__browse" href="#music">{t.heroBrowse}<span aria-hidden="true">↓</span></a>}
           </div>
           <p class="hero__meta" aria-hidden="true">TOKYO · NIGHT · <span id="hero-clock"></span></p>
           <div class="hero__scroll" aria-hidden="true"><span>SCROLL</span></div>
@@ -191,6 +207,7 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
         <div class="container reveal">
           <p class="section__label">LISTEN / FOLLOW</p>
           <h2 class="listen-section__title">{t.listenTitle.map((line) => <span>{line}</span>)}</h2>
+          <p class="listen-section__note">{t.listenNote}</p>
           <ul class="listen">
             {links.map((link) => (
               <li>
@@ -205,6 +222,18 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
       </section>
     )}
   </main>
+
+  <!-- スマホ用。最初の画面を過ぎたら下に出る「聴く」バー。曲一覧とLISTENが見えている間は隠す -->
+  {latest && (
+    <div class="listen-bar" data-listen-bar hidden>
+      <button class="listen-bar__play" type="button" data-play={playId(latest)} data-title={latest.title} data-play-location="sticky_bar">
+        <span aria-hidden="true">▶</span>{t.stickyPlay}
+      </button>
+      {streamLinks.map((link) => (
+        <a class="listen-bar__link" href={link.url} target="_blank" rel="noopener" data-cta="sticky_bar">{link.label}</a>
+      ))}
+    </div>
+  )}
 </BaseLayout>
 
 <style>
@@ -321,9 +350,12 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
   .hero__body > * { animation: rise-in 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
   .hero__label { animation-delay: 0.9s; }
   .hero__copy { animation-delay: 1.3s; }
-  .hero__sub { animation-delay: 1.9s; }
-  .hero__news { animation-delay: 2.2s; }
-  .hero__cta { animation-delay: 2.4s; }
+  .hero__sub { animation-delay: 1.5s; }
+  .hero__news { animation-delay: 1.7s; }
+  .hero__cta { animation-delay: 1.8s; }
+  /* 再生ボタンと配信リンクは早めに出す（演出を待たずに押せるように） */
+  .hero__streams { animation-delay: 2s; }
+  .hero__browse { animation-delay: 2.2s; }
   @keyframes rise-in {
     from { opacity: 0; transform: translateY(1.25rem); filter: blur(6px); }
     to { opacity: 1; transform: none; filter: none; }
@@ -409,6 +441,51 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
   .hero__cta:focus-visible { border-color: var(--amber); color: var(--amber); }
   .hero__cta-arrow { transition: transform 0.5s ease; }
   .hero__cta:hover .hero__cta-arrow { transform: translateX(0.3rem); }
+  /* 再生ボタンは button 要素なので、リンクと同じ見た目にそろえる */
+  button.hero__cta {
+    background: var(--scrim-night-soft);
+    color: var(--on-image);
+    font: inherit;
+    font-size: 0.85rem;
+    letter-spacing: 0.18em;
+    cursor: pointer;
+    border-color: var(--amber);
+  }
+  .hero__cta-icon { margin-right: 0.8rem; color: var(--amber); font-size: 0.75rem; }
+
+  /* 配信サービスへの近道。再生ボタンの下に小さく並べる */
+  .hero__streams {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+  }
+  .hero__streams a {
+    display: inline-flex;
+    gap: 0.35rem;
+    padding-block: 0.4rem;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    color: var(--on-image);
+    border-bottom: 1px solid var(--on-image-dim);
+    text-shadow: 0 0 1.5rem var(--scrim-night);
+    transition: color 0.4s ease, border-color 0.4s ease;
+  }
+  .hero__streams a:hover,
+  .hero__streams a:focus-visible { color: var(--amber); border-color: var(--amber); }
+  .hero__browse {
+    display: inline-flex;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    color: var(--on-image-dim);
+  }
+  .hero__browse:hover,
+  .hero__browse:focus-visible { color: var(--amber); }
 
   .hero__meta {
     display: none;
@@ -450,8 +527,10 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
   }
 
   /* ---------- 02 OUR STORY / 03 MEMORIES（言葉だけ） ---------- */
+  /* 物語は残しつつ、曲にたどり着くまでの距離を縮めるため各場面の高さを詰めている
+     （以前は 85 / 70 / 100svh。スマホで曲一覧まで約6画面あり、そこで帰る人が多かった） */
   .words {
-    min-height: 85svh;
+    min-height: 60svh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -470,7 +549,7 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
     line-height: 2.5;
     color: var(--on-image-dim);
   }
-  .memory { min-height: 70svh; }
+  .memory { min-height: 45svh; }
   .memory__copy {
     margin: 0;
     font-size: clamp(1.3rem, 5vw, 2.3rem);
@@ -479,7 +558,7 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
     letter-spacing: 0.08em;
   }
   /* 最後の一文は大きく、余韻を長く */
-  .memory--last { min-height: 100svh; }
+  .memory--last { min-height: 75svh; }
   .memory--last .memory__copy { font-size: clamp(1.7rem, 6vw, 3.2rem); }
 
   /* ---------- 04 MUSIC ---------- */
@@ -622,6 +701,51 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
     margin: 1.5rem 0 3rem;
   }
   .listen-section .listen { margin-inline: auto; text-align: left; }
+  .listen-section__note { margin: -1.5rem 0 2.5rem; color: var(--text-dim); font-size: 0.9rem; }
+
+  /* ---------- スマホ下部の「聴く」バー ---------- */
+  .listen-bar {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem calc(0.6rem + env(safe-area-inset-bottom));
+    white-space: nowrap;
+    background: var(--header-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    color: var(--text);
+    transform: translateY(0);
+    transition: transform 0.4s ease;
+  }
+  .listen-bar[hidden] { display: flex; transform: translateY(110%); visibility: hidden; }
+  @media (min-width: 48rem) { .listen-bar { display: none !important; } }
+  .listen-bar__play {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    gap: 0.45rem;
+    margin-right: auto;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--amber);
+    background: none;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+  .listen-bar__play span { color: var(--amber); font-size: 0.7rem; }
+  .listen-bar__link {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    color: var(--text-dim);
+    padding-block: 0.4rem;
+  }
 
   /* ---------- 動きを減らす設定 ---------- */
   @media (prefers-reduced-motion: reduce) {
@@ -705,5 +829,17 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
     }
 
     start();
+  }
+
+  // スマホ下部の「聴く」バー。最初の画面（再生ボタンがある）と、曲一覧・LISTENが見えている間は隠す
+  const bar = document.querySelector<HTMLElement>('[data-listen-bar]');
+  const hideZones = [...document.querySelectorAll<HTMLElement>('.hero, #music, #listen')];
+  if (bar && hideZones.length) {
+    const visible = new Set<Element>();
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) e.isIntersecting ? visible.add(e.target) : visible.delete(e.target);
+      bar.hidden = visible.size > 0;
+    });
+    hideZones.forEach((el) => io.observe(el));
   }
 </script>

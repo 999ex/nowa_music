@@ -1,0 +1,93 @@
+---
+// 日本語ページを外国語設定のブラウザで見ている人に、その言語版があることを知らせる小さな案内。
+// 勝手に切り替えはしない（検索エンジンや日本語を読みたい人の邪魔をしないため）。閉じたら次から出さない。
+import { LANG_SUGGEST, stripLang, localePath } from '../lib/i18n.js';
+
+const { lang = 'ja' } = Astro.props;
+const path = stripLang(Astro.url.pathname);
+const targets = Object.fromEntries(
+  Object.entries(LANG_SUGGEST).map(([l, m]) => [l, { ...m, href: localePath(l, path) }])
+);
+---
+
+{lang === 'ja' && (
+  <div class="lang-suggest" data-lang-suggest hidden>
+    <p class="lang-suggest__text" data-lang-text></p>
+    <a class="lang-suggest__go" data-lang-go href="/en/"></a>
+    <button class="lang-suggest__close" type="button" data-lang-close aria-label="Close">×</button>
+  </div>
+  <script type="application/json" data-lang-targets set:html={JSON.stringify(targets)}></script>
+)}
+
+<style>
+  .lang-suggest {
+    position: fixed;
+    top: calc(var(--header-height) + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 25;
+    width: min(calc(100% - 2rem), 34rem);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.6rem 0.6rem 1rem;
+    background: var(--header-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line);
+    color: var(--on-image);
+    font-size: 0.82rem;
+  }
+  .lang-suggest[hidden] { display: none; }
+  .lang-suggest__text { margin: 0; flex: 1; line-height: 1.5; }
+  .lang-suggest__go {
+    flex: none;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    white-space: nowrap;
+  }
+  .lang-suggest__close {
+    flex: none;
+    background: none;
+    border: none;
+    color: var(--on-image-dim);
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 0.25rem 0.4rem;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  import { suggestLang } from '../lib/i18n.js';
+
+  const box = document.querySelector<HTMLElement>('[data-lang-suggest]');
+  const data = document.querySelector('[data-lang-targets]');
+  const KEY = 'nowa-lang-suggest-closed';
+  const read = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
+  const save = () => { try { localStorage.setItem(KEY, '1'); } catch { /* 保存できなくても表示を閉じるだけ */ } };
+
+  if (box && data && !read()) {
+    const target = suggestLang(navigator.languages?.length ? [...navigator.languages] : [navigator.language]);
+    const targets = JSON.parse(data.textContent || '{}');
+    const t = target && targets[target];
+    if (t) {
+      box.querySelector('[data-lang-text]')!.textContent = t.text;
+      const go = box.querySelector<HTMLAnchorElement>('[data-lang-go]')!;
+      go.textContent = t.go;
+      go.href = t.href;
+      go.hreflang = target;
+      go.addEventListener('click', () => {
+        save();
+        window.gtag?.('event', 'lang_suggest_click', { suggested_lang: target });
+      });
+      box.querySelector('[data-lang-close]')!.addEventListener('click', () => {
+        save();
+        box.hidden = true;
+      });
+      box.hidden = false;
+      window.gtag?.('event', 'lang_suggest_shown', { suggested_lang: target });
+    }
+  }
+</script>

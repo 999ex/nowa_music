@@ -36,6 +36,10 @@ export const messages = {
       heroCopy: ['言葉にできなかった想いを、', '音楽に。'],
       heroSub: ['あの頃、伝えられなかった気持ち。', '今も心に残る、忘れられない人。'],
       heroCta: 'MUSICを聴く',
+      heroPlay: '最新作を再生',
+      heroBrowse: 'すべての曲を見る',
+      stickyPlay: '最新作を聴く',
+      listenNote: 'フォローすると、新しい曲をいち早くお届けします。',
       storyTitle: ['あの日、', '言えなかった言葉がある。'],
       storyLines: ['好きだったのに、言えなかった。', '本当は、引き止めたかった。', 'あのとき、もっと素直になれていたら。'],
       scenes: [
@@ -112,6 +116,10 @@ export const messages = {
       heroCopy: ['The feelings I could never put into words,', 'turned into music.'],
       heroSub: ['The words I could not say back then.', 'The one I still cannot forget.'],
       heroCta: 'Listen to the music',
+      heroPlay: 'Play the latest',
+      heroBrowse: 'See all songs',
+      stickyPlay: 'Play latest',
+      listenNote: 'Follow to hear new songs first.',
       storyTitle: ['There are words', 'I could not say that day.'],
       storyLines: ['I loved you, but I never said it.', 'I wanted to ask you to stay.', 'If only I had been more honest then.'],
       scenes: [
@@ -188,6 +196,10 @@ export const messages = {
       heroCopy: ['말로 하지 못한 마음을,', '음악으로.'],
       heroSub: ['그때 전하지 못한 마음.', '지금도 마음에 남은, 잊을 수 없는 사람.'],
       heroCta: 'MUSIC 듣기',
+      heroPlay: '최신곡 재생',
+      heroBrowse: '모든 곡 보기',
+      stickyPlay: '최신곡 듣기',
+      listenNote: '팔로우하면 새로운 곡을 가장 먼저 들을 수 있어요.',
       storyTitle: ['그날,', '하지 못한 말이 있다.'],
       storyLines: ['좋아했는데, 말하지 못했다.', '사실은 붙잡고 싶었다.', '그때, 조금 더 솔직했더라면.'],
       scenes: [
@@ -264,6 +276,10 @@ export const messages = {
       heroCopy: ['把說不出口的心意，', '化為音樂。'],
       heroSub: ['那時，沒能傳達的心情。', '至今仍留在心裡，無法忘記的人。'],
       heroCta: '聆聽 MUSIC',
+      heroPlay: '播放最新作品',
+      heroBrowse: '查看所有歌曲',
+      stickyPlay: '聆聽最新作品',
+      listenNote: '追蹤我們，搶先聆聽新歌。',
       storyTitle: ['那一天，', '有一句沒能說出口的話。'],
       storyLines: ['明明喜歡，卻沒能說出口。', '其實，好想留住你。', '那時，如果能再坦率一點就好了。'],
       scenes: [
@@ -330,3 +346,26 @@ export const messages = {
     },
   },
 };
+
+/**
+ * 言語案内バナーの文言。案内する先の言語で書く（その言語を読む人に向けた案内なので）。
+ */
+export const LANG_SUGGEST = {
+  en: { text: 'This site is also available in English.', go: 'View in English' },
+  ko: { text: '이 사이트는 한국어로도 볼 수 있어요.', go: '한국어로 보기' },
+  'zh-tw': { text: '本網站也提供繁體中文版本。', go: '查看繁體中文版' },
+};
+
+/**
+ * ブラウザの言語設定（navigator.languages）から、案内すべき言語を返す。
+ * 日本語を含む設定なら案内しない（null）。韓国語・中国語（繁体／台湾・香港）以外の外国語は英語へ。
+ * 簡体字（zh-CN など）は繁体字ページを出すより英語の方が無難なので英語にする。
+ */
+export function suggestLang(navLangs = []) {
+  const list = navLangs.map((l) => String(l).toLowerCase()).filter(Boolean);
+  if (list.length === 0 || list.some((l) => l === 'ja' || l.startsWith('ja-'))) return null;
+  const first = list[0];
+  if (first === 'ko' || first.startsWith('ko-')) return 'ko';
+  if (/^zh-(tw|hk|mo|hant)/.test(first)) return 'zh-tw';
+  return 'en';
+}
