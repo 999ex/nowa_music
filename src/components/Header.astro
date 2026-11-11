@@ -1,5 +1,7 @@
 ---
 import { messages, stripLang, localePath, LANGS, LANG_META } from '../lib/i18n.js';
+import { activeLinks } from '../lib/links.js';
+import ServiceIcon from './ServiceIcon.astro';
 
 const { lang = 'ja' } = Astro.props;
 const m = messages[lang];
@@ -9,6 +11,9 @@ const items = [
   { href: '/about/', label: m.nav.about },
 ];
 const otherLangs = LANGS.filter((l) => l !== lang);
+// 来訪のほとんどがスマホなので、どのページでも1タップで聴きに行けるよう主要3サービスを常に出す
+const SERVICES = ['Apple Music', 'Spotify', 'YouTube'];
+const services = SERVICES.map((label) => activeLinks().find((link) => link.label === label)).filter(Boolean);
 ---
 
 <header class="header">
@@ -27,9 +32,17 @@ const otherLangs = LANGS.filter((l) => l !== lang);
           {item.label}
         </a>
       ))}
-      <a class="header__listen" href={localePath(lang, '/#listen')}>
-        {m.nav.listen}<span class="header__arrow" aria-hidden="true">↗</span>
-      </a>
+      {services.length > 0 && (
+        <ul class="header__services">
+          {services.map((link) => (
+            <li>
+              <a class="header__service" href={link.url} target="_blank" rel="noopener" aria-label={link.label} title={link.label} data-cta="header">
+                <ServiceIcon name={link.label} size={19} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
       <details class="header__lang">
         <summary>{LANG_META[lang].short}</summary>
         <ul class="header__lang-list">
@@ -91,17 +104,27 @@ const otherLangs = LANGS.filter((l) => l !== lang);
   }
   .header__link:hover,
   .header__link[aria-current='page'] { color: var(--accent); }
-  .header__listen {
-    display: inline-flex;
+  /* 配信サービス3つ。文字より目に入りやすいロゴだけを並べ、押せる範囲は指で押しやすい大きさにする */
+  .header__services {
+    display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 0.9rem;
-    border: 1px solid var(--line);
-    color: var(--text);
-    transition: border-color 0.4s ease, color 0.4s ease;
+    gap: 0.15rem;
+    margin: 0;
+    padding: 0 0.25rem;
+    list-style: none;
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
   }
-  .header__listen:hover { border-color: var(--accent); color: var(--accent); }
-  .header__arrow { font-size: 0.7em; }
+  .header__service {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    color: var(--text);
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  .header__service:hover,
+  .header__service:focus-visible { color: var(--amber); transform: translateY(-1px); }
   .header__lang { position: relative; }
   .header__lang summary {
     display: block;
@@ -133,15 +156,20 @@ const otherLangs = LANGS.filter((l) => l !== lang);
   .header__lang-list a { display: block; padding: 0.55rem 1rem; }
   .header__lang-list a:hover { color: var(--accent); }
 
-  /* スマホではLISTENの文字が詰まるので余白と字間を詰める */
+  /* スマホでは文字のメニューを詰めて、ロゴのボタンの幅を確保する */
   @media (max-width: 26rem) {
-    .header__nav { gap: 0.6rem; font-size: 0.68rem; letter-spacing: 0.12em; }
-    .header__listen { padding: 0.45rem 0.7rem; }
+    .header__nav { gap: 0.5rem; font-size: 0.66rem; letter-spacing: 0.1em; }
+    .header__services { padding: 0 0.1rem; gap: 0; }
+    .header__service { width: 2.4rem; height: 2.6rem; }
   }
 
   /* 342px未満だとロゴ・ナビが画面外にはみ出すため、ロゴ下段を隠して幅を稼ぐ。
      26remのブレークポイントは375pxも含んでしまい下段が消えるため、専用の狭いブレークポイントにする */
   @media (max-width: 21.375rem) {
     .header__logo-sub { display: none; }
+    .header__inner { padding-inline: 0.9rem; gap: 0.5rem; }
+    .header__logo-main { letter-spacing: 0.18em; }
+    .header__nav { gap: 0.35rem; letter-spacing: 0.04em; }
+    .header__service { width: 2.15rem; }
   }
 </style>

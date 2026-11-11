@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import AlbumShelf from '../AlbumShelf.astro';
 import TrackList from '../TrackList.astro';
+import ServiceIcon from '../ServiceIcon.astro';
 import heroImage from '../../assets/brand/hero.webp';
 import memory01 from '../../assets/brand/memory-01.webp';
 import memory02 from '../../assets/brand/memory-02.webp';
@@ -45,7 +46,7 @@ const latest = albums[0];
 const moreAlbums = albums.slice(1);
 const links = activeLinks();
 // MUSICセクションから直接飛べる主要な配信先
-const streamLinks = links.filter((link) => ['YouTube', 'Spotify', 'Apple Music'].includes(link.label));
+const streamLinks = ['Apple Music', 'Spotify', 'YouTube'].map((label) => links.find((link) => link.label === label)).filter(Boolean);
 const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
 ---
 
@@ -96,7 +97,7 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
             {streamLinks.length > 0 && (
               <ul class="hero__streams">
                 {streamLinks.map((link) => (
-                  <li><a href={link.url} target="_blank" rel="noopener" data-cta="hero">{link.label}<span aria-hidden="true">↗</span></a></li>
+                  <li><a href={link.url} target="_blank" rel="noopener" data-cta="hero"><ServiceIcon name={link.label} size={18} /><span>{link.label}</span></a></li>
                 ))}
               </ul>
             )}
@@ -230,7 +231,7 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
         <span aria-hidden="true">▶</span>{t.stickyPlay}
       </button>
       {streamLinks.map((link) => (
-        <a class="listen-bar__link" href={link.url} target="_blank" rel="noopener" data-cta="sticky_bar">{link.label}</a>
+        <a class="listen-bar__link" href={link.url} target="_blank" rel="noopener" data-cta="sticky_bar" aria-label={link.label}><ServiceIcon name={link.label} size={20} /></a>
       ))}
     </div>
   )}
@@ -453,25 +454,32 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
   }
   .hero__cta-icon { margin-right: 0.8rem; color: var(--amber); font-size: 0.75rem; }
 
-  /* 配信サービスへの近道。再生ボタンの下に小さく並べる */
+  /* 配信サービスへの近道。再生ボタンの下に、ロゴ付きのボタンを3つ同じ幅で並べる（スマホで押しやすいよう高さを取る） */
   .hero__streams {
     list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.25rem;
-    margin: 1.25rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 26rem;
+    margin: 0.85rem 0 0;
     padding: 0;
   }
   .hero__streams a {
-    display: inline-flex;
-    gap: 0.35rem;
-    padding-block: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: 3.6rem;
+    padding: 0.6rem 0.25rem;
     font-family: var(--font-display);
-    font-size: 0.9rem;
-    letter-spacing: 0.12em;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
     color: var(--on-image);
-    border-bottom: 1px solid var(--on-image-dim);
-    text-shadow: 0 0 1.5rem var(--scrim-night);
+    border: 1px solid var(--on-image-dim);
+    background: var(--scrim-night-soft);
     transition: color 0.4s ease, border-color 0.4s ease;
   }
   .hero__streams a:hover,
@@ -740,11 +748,11 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
   }
   .listen-bar__play span { color: var(--amber); font-size: 0.7rem; }
   .listen-bar__link {
-    font-family: var(--font-display);
-    font-size: 0.8rem;
-    letter-spacing: 0.02em;
-    color: var(--text-dim);
-    padding-block: 0.4rem;
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    color: var(--text);
   }
 
   /* ---------- 動きを減らす設定 ---------- */
