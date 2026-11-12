@@ -11,9 +11,10 @@ const items = [
   { href: '/about/', label: m.nav.about },
 ];
 const otherLangs = LANGS.filter((l) => l !== lang);
-// 来訪のほとんどがスマホなので、どのページでも1タップで聴きに行けるよう主要3サービスを常に出す
-const SERVICES = ['Apple Music', 'Spotify', 'YouTube'];
-const services = SERVICES.map((label) => activeLinks().find((link) => link.label === label)).filter(Boolean);
+// 来訪のほとんどがスマホなので、どのページでも1タップで行けるよう 配信3つ と SNS2つ を常に出す
+const pick = (labels) => labels.map((label) => activeLinks().find((link) => link.label === label)).filter(Boolean);
+const services = pick(['Apple Music', 'Spotify', 'YouTube']);
+const socials = pick(['Instagram', 'TikTok']);
 ---
 
 <header class="header">
@@ -32,17 +33,33 @@ const services = SERVICES.map((label) => activeLinks().find((link) => link.label
           {item.label}
         </a>
       ))}
-      {services.length > 0 && (
+      {services.length + socials.length > 0 && (
         <ul class="header__services">
-          {services.map((link) => (
-            <li>
+          {[...services, ...socials].map((link, i) => (
+            <li class:list={[i === services.length && i > 0 && 'header__services-sep']}>
               <a class="header__service" href={link.url} target="_blank" rel="noopener" aria-label={link.label} title={link.label} data-cta="header">
-                <ServiceIcon name={link.label} size={19} />
+                <ServiceIcon name={link.label} size={i < services.length ? 19 : 17} />
               </a>
             </li>
           ))}
         </ul>
       )}
+      <details class="header__menu">
+        <summary aria-label={m.nav.label}>
+          <span class="header__menu-bars" aria-hidden="true"><span></span><span></span></span>
+        </summary>
+        <ul class="header__lang-list">
+          {items.map((item) => (
+            <li><a href={localePath(lang, item.href)}>{item.label}</a></li>
+          ))}
+          <li class="header__menu-sep" aria-hidden="true"></li>
+          {otherLangs.map((l) => (
+            <li>
+              <a href={localePath(l, path)} hreflang={l} lang={l}>{LANG_META[l].name}</a>
+            </li>
+          ))}
+        </ul>
+      </details>
       <details class="header__lang">
         <summary>{LANG_META[lang].short}</summary>
         <ul class="header__lang-list">
@@ -125,6 +142,31 @@ const services = SERVICES.map((label) => activeLinks().find((link) => link.label
   }
   .header__service:hover,
   .header__service:focus-visible { color: var(--amber); transform: translateY(-1px); }
+  /* 配信とSNSの間の細い区切り */
+  .header__services-sep { display: flex; align-items: center; }
+  .header__services-sep::before {
+    content: "";
+    width: 1px;
+    height: 1.1rem;
+    margin: 0 0.2rem;
+    background: var(--line);
+  }
+
+  /* スマホ用メニュー（PCでは出さない） */
+  .header__menu { position: relative; display: none; }
+  .header__menu summary {
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.6rem;
+    list-style: none;
+    cursor: pointer;
+  }
+  .header__menu summary::-webkit-details-marker { display: none; }
+  .header__menu-bars { display: grid; gap: 5px; width: 18px; }
+  .header__menu-bars span { display: block; height: 1px; background: var(--text); }
+  .header__menu[open] .header__menu-bars span { background: var(--accent); }
+  .header__menu-sep { height: 1px; margin: 0.35rem 1rem; background: var(--line); }
   .header__lang { position: relative; }
   .header__lang summary {
     display: block;
@@ -156,11 +198,14 @@ const services = SERVICES.map((label) => activeLinks().find((link) => link.label
   .header__lang-list a { display: block; padding: 0.55rem 1rem; }
   .header__lang-list a:hover { color: var(--accent); }
 
-  /* スマホでは文字のメニューを詰めて、ロゴのボタンの幅を確保する */
-  @media (max-width: 26rem) {
-    .header__nav { gap: 0.5rem; font-size: 0.66rem; letter-spacing: 0.1em; }
-    .header__services { padding: 0 0.1rem; gap: 0; }
-    .header__service { width: 2.4rem; height: 2.6rem; }
+  /* スマホでは MUSIC・ABOUT・言語をメニューに畳み、ロゴのボタン5つを並べる */
+  @media (max-width: 47.99rem) {
+    .header__link,
+    .header__lang { display: none; }
+    .header__menu { display: block; }
+    .header__nav { gap: 0.25rem; }
+    .header__services { padding: 0 0.15rem; gap: 0; border-left: none; }
+    .header__service { width: 2.35rem; height: 2.6rem; }
   }
 
   /* 342px未満だとロゴ・ナビが画面外にはみ出すため、ロゴ下段を隠して幅を稼ぐ。
@@ -169,7 +214,7 @@ const services = SERVICES.map((label) => activeLinks().find((link) => link.label
     .header__logo-sub { display: none; }
     .header__inner { padding-inline: 0.9rem; gap: 0.5rem; }
     .header__logo-main { letter-spacing: 0.18em; }
-    .header__nav { gap: 0.35rem; letter-spacing: 0.04em; }
-    .header__service { width: 2.15rem; }
+    .header__service { width: 2.1rem; }
+    .header__menu summary { width: 2rem; }
   }
 </style>
