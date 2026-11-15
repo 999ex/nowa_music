@@ -6,6 +6,8 @@ import AlbumShelf from '../AlbumShelf.astro';
 import TrackList from '../TrackList.astro';
 import ServiceIcon from '../ServiceIcon.astro';
 import heroImage from '../../assets/brand/hero.webp';
+import featuredImage from '../../assets/brand/hero-unspoken.webp';
+import { FEATURED } from '../../lib/featured.js';
 import memory01 from '../../assets/brand/memory-01.webp';
 import memory02 from '../../assets/brand/memory-02.webp';
 import memory03 from '../../assets/brand/memory-03.webp';
@@ -42,7 +44,9 @@ const PHOTO = { format: 'webp', quality: 80, widths: [960, 1672], sizes: '100vw'
 
 // 背景のスライド。時間でゆっくり入れ替わり、スクロールには連動させない（スクロールを重くしないため）。
 // fx = スマホの縦長画面で切り抜くときの横位置。人物の顔が画面の中央付近に来るよう写真ごとに決めている。
+// 1枚目は いま売り出している曲（Instagram から来た人が見た写真と同じもの）
 const slides = [
+  { src: featuredImage, fx: 66 },
   { src: heroImage, fx: 90 },
   { src: memory06, fx: 85 },
   { src: memory01, fx: 43 },
@@ -59,6 +63,9 @@ const moreAlbums = albums.slice(1);
 const links = activeLinks();
 // MUSICセクションから直接飛べる主要な配信先
 const streamLinks = ['Apple Music', 'Spotify', 'YouTube'].map((label) => links.find((link) => link.label === label)).filter(Boolean);
+// 最初の画面と下の「聴く」バーは、いま売り出している曲そのものへ直接つなぐ
+const featuredPlay = `video:${FEATURED.youtubeId}`;
+const featuredLinks = FEATURED.links;
 const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
 ---
 
@@ -94,21 +101,14 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
                 <span class="hero__news-arrow" aria-hidden="true">→</span>
               </a>
             )}
-            <!-- 来た人がすぐ聴けるように、最新作の再生を最初の画面に置く（多くの人がトップだけ見て帰るため） -->
-            {latest ? (
-              <button class="hero__cta" type="button" data-play={playId(latest)} data-title={latest.title} data-play-location="hero">
-                <span><span class="hero__cta-icon" aria-hidden="true">▶</span>{t.heroPlay}</span>
-                <span class="hero__cta-arrow" aria-hidden="true">→</span>
-              </button>
-            ) : (
-              <a class="hero__cta" href="#music">
-                <span>{t.heroCta}</span>
-                <span class="hero__cta-arrow" aria-hidden="true">→</span>
-              </a>
-            )}
-            {streamLinks.length > 0 && (
+            <!-- 来た人がすぐ聴けるように、いま売り出している曲の再生を最初の画面に置く（多くの人がトップだけ見て帰るため） -->
+            <button class="hero__cta" type="button" data-play={featuredPlay} data-title={FEATURED.title} data-play-location="hero">
+              <span><span class="hero__cta-icon" aria-hidden="true">▶</span>{t.heroPlaySong(FEATURED.shortTitle)}</span>
+              <span class="hero__cta-arrow" aria-hidden="true">→</span>
+            </button>
+            {featuredLinks.length > 0 && (
               <ul class="hero__streams">
-                {streamLinks.map((link) => (
+                {featuredLinks.map((link) => (
                   <li><a href={link.url} target="_blank" rel="noopener" data-cta="hero"><ServiceIcon name={link.label} size={18} /><span>{link.label}</span></a></li>
                 ))}
               </ul>
@@ -239,10 +239,10 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
   <!-- スマホ用。最初の画面を過ぎたら下に出る「聴く」バー。曲一覧とLISTENが見えている間は隠す -->
   {latest && (
     <div class="listen-bar" data-listen-bar hidden>
-      <button class="listen-bar__play" type="button" data-play={playId(latest)} data-title={latest.title} data-play-location="sticky_bar">
-        <span aria-hidden="true">▶</span>{t.stickyPlay}
+      <button class="listen-bar__play" type="button" data-play={featuredPlay} data-title={FEATURED.title} data-play-location="sticky_bar">
+        <span aria-hidden="true">▶</span>{FEATURED.shortTitle}
       </button>
-      {streamLinks.map((link) => (
+      {featuredLinks.map((link) => (
         <a class="listen-bar__link" href={link.url} target="_blank" rel="noopener" data-cta="sticky_bar" aria-label={link.label}><ServiceIcon name={link.label} size={20} /></a>
       ))}
     </div>
@@ -442,12 +442,13 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    gap: 2.5rem;
+    gap: 1.5rem;
     min-width: min(15rem, 100%);
-    padding: 1rem 1.5rem;
+    padding: 1rem 1.25rem;
     border: 1px solid var(--on-image-dim);
     font-size: 0.85rem;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
     transition: border-color 0.5s ease, color 0.5s ease;
   }
   .hero__cta:hover,
