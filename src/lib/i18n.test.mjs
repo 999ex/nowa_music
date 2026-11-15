@@ -27,12 +27,28 @@ test('繁体字（台湾・香港）は繁体字ページへ、簡体字は英�
 
 test('それ以外の外国語は英語へ', () => {
   assert.equal(suggestLang(['en-US']), 'en');
-  assert.equal(suggestLang(['pt-BR', 'pt']), 'en');
   assert.equal(suggestLang(['de']), 'en');
 });
 
+test('ポルトガル語・インドネシア語・タイ語はそれぞれのページへ', () => {
+  assert.equal(suggestLang(['pt-BR', 'pt']), 'pt-br');
+  assert.equal(suggestLang(['pt-PT']), 'pt-br');
+  assert.equal(suggestLang(['id-ID']), 'id');
+  assert.equal(suggestLang(['th']), 'th');
+});
+
+test('全言語で、日本語にある文言が欠けていない', () => {
+  const keys = (o, p = '') =>
+    Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' && !Array.isArray(v) ? keys(v, `${p}${k}.`) : [`${p}${k}`]));
+  const ja = keys(messages.ja);
+  for (const l of LANGS) {
+    const have = new Set(keys(messages[l]));
+    assert.deepEqual(ja.filter((k) => !have.has(k)), [], l);
+  }
+});
+
 test('案内先の言語すべてに文言がある', () => {
-  for (const l of ['en', 'ko', 'zh-tw']) {
+  for (const l of LANGS.filter((x) => x !== 'ja')) {
     assert.ok(LANG_SUGGEST[l].text && LANG_SUGGEST[l].go, l);
   }
 });

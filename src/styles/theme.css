@@ -64,6 +64,12 @@
   --font-display: "Cormorant", "Noto Serif TC", "Times New Roman", serif;
 }
 
+/* タイ語のページはタイ文字のフォントを先にする（欧文の Cormorant にはタイ文字が無い） */
+:root:lang(th) {
+  --font-serif: "Noto Serif Thai", "Noto Serif JP", serif;
+  --font-display: "Cormorant", "Noto Serif Thai", "Times New Roman", serif;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }

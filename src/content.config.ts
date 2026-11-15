@@ -7,6 +7,9 @@ const texts = z.object({
   en: z.string().optional(),
   ko: z.string().optional(),
   'zh-tw': z.string().optional(),
+  'pt-br': z.string().optional(),
+  id: z.string().optional(),
+  th: z.string().optional(),
 });
 const optionalTexts = texts.partial();
 

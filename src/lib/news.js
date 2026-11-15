@@ -23,7 +23,8 @@ export function sortNews(entries) {
   return [...entries].sort((a, b) => b.data.date.localeCompare(a.data.date) || b.id.localeCompare(a.id));
 }
 
-const DATE_LOCALES = { ja: 'ja-JP', en: 'en-US', ko: 'ko-KR', 'zh-tw': 'zh-Hant-TW' };
+// タイ語は仏暦が標準だが、チャートの日付をほかの言語とそろえるため西暦にする
+const DATE_LOCALES = { ja: 'ja-JP', en: 'en-US', ko: 'ko-KR', 'zh-tw': 'zh-Hant-TW', 'pt-br': 'pt-BR', id: 'id-ID', th: 'th-TH-u-ca-gregory' };
 
 /** '2026-10-31' を各言語の日付表記にする。時差でずれないよう UTC として扱う。 */
 export function formatDate(ymd, lang) {
@@ -43,7 +44,7 @@ const COUNTRIES = {
   sg: { ja: 'シンガポール', en: 'Singapore', ko: '싱가포르', 'zh-tw': '新加坡' },
   fr: { ja: 'フランス', en: 'France', ko: '프랑스', 'zh-tw': '法國' },
   tw: { ja: '台湾', en: 'Taiwan', ko: '대만', 'zh-tw': '台灣' },
-  hk: { ja: '香港', en: 'Hong Kong', ko: '홍콩', 'zh-tw': '香港' },
+  hk: { ja: '香港', en: 'Hong Kong', ko: '홍콩', 'zh-tw': '香港', 'pt-br': 'Hong Kong', id: 'Hong Kong', th: 'ฮ่องกง' },
   jp: { ja: '日本', en: 'Japan', ko: '일본', 'zh-tw': '日本' },
   kr: { ja: '韓国', en: 'South Korea', ko: '한국', 'zh-tw': '韓國' },
   de: { ja: 'ドイツ', en: 'Germany', ko: '독일', 'zh-tw': '德國' },
@@ -65,10 +66,11 @@ export function countryName(code, lang) {
   const key = String(code).toLowerCase();
   if (!/^[a-z]{2}$/.test(key)) return String(code);
   const known = COUNTRIES[key];
-  if (known) return known[lang] ?? known.en;
+  if (known?.[lang]) return known[lang];
+  // 表に無い言語・国は、その言語の正式な国名（Intl）で出す
   try {
-    return new Intl.DisplayNames([DATE_LOCALES[lang] ?? 'ja-JP'], { type: 'region' }).of(key.toUpperCase()) ?? key;
+    return new Intl.DisplayNames([DATE_LOCALES[lang] ?? 'ja-JP'], { type: 'region' }).of(key.toUpperCase()) ?? known?.en ?? key;
   } catch {
-    return key.toUpperCase();
+    return known?.en ?? key.toUpperCase();
   }
 }

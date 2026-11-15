@@ -1,5 +1,5 @@
-/** 対応言語。ja が既定（URLに接頭辞なし）、ほかは /en/ /ko/ /zh-tw/ 配下。 */
-export const LANGS = ['ja', 'en', 'ko', 'zh-tw'];
+/** 対応言語。ja が既定（URLに接頭辞なし）、ほかは /en/ /ko/ /zh-tw/ /pt-br/ /id/ /th/ 配下。 */
+export const LANGS = ['ja', 'en', 'ko', 'zh-tw', 'pt-br', 'id', 'th'];
 
 /** 言語切り替えの表示名と og:locale。 */
 export const LANG_META = {
@@ -7,6 +7,9 @@ export const LANG_META = {
   en: { short: 'EN', name: 'English', locale: 'en_US' },
   ko: { short: 'KO', name: '한국어', locale: 'ko_KR' },
   'zh-tw': { short: '繁中', name: '繁體中文', locale: 'zh_TW' },
+  'pt-br': { short: 'PT', name: 'Português', locale: 'pt_BR' },
+  id: { short: 'ID', name: 'Bahasa Indonesia', locale: 'id_ID' },
+  th: { short: 'TH', name: 'ภาษาไทย', locale: 'th_TH' },
 };
 export const DEFAULT_LANG = 'ja';
 
@@ -16,7 +19,8 @@ export const langFromPath = (pathname) =>
 
 /** 言語接頭辞を外したパス（/en/music/ → /music/）。 */
 export const stripLang = (pathname) => {
-  const stripped = pathname.replace(/^\/(en|ko|zh-tw)(?=\/|$)/, '');
+  const prefix = LANGS.find((l) => l !== DEFAULT_LANG && (pathname === `/${l}` || pathname.startsWith(`/${l}/`)));
+  const stripped = prefix ? pathname.slice(prefix.length + 1) : pathname;
   return stripped === '' ? '/' : stripped;
 };
 
@@ -465,6 +469,339 @@ export const messages = {
       ],
     },
   },
+  // ポルトガル語（ブラジル）。「saudade（会えない人を想う切なさ）」に通じる、静かで余韻のある言い回しにする
+  'pt-br': {
+    htmlLang: 'pt-BR',
+    siteDescription: 'O que eu nunca disse, virou música. Nowa Music conta histórias de amores que passaram e de palavras que ficaram por dizer, em baladas de J-POP, imagens e histórias.',
+    nav: { label: 'Menu principal', music: 'MUSIC', about: 'ABOUT', listen: 'LISTEN' },
+    footer: { message: 'O que eu nunca disse, virou música.', links: 'Links externos', analytics: 'Este site usa o Google Analytics.' },
+    player: { label: 'Player', close: 'Fechar' },
+    trackCount: (n) => `${n} ${n === 1 ? 'faixa' : 'faixas'}`,
+    home: {
+      heroCopy: ['O que eu nunca disse,', 'virou música.'],
+      heroSub: ['As palavras que ficaram naquele tempo.', 'Alguém que ainda mora no coração.'],
+      heroCta: 'Ouvir as músicas',
+      heroPlay: 'Ouvir o mais recente',
+      heroPlaySong: (s) => `Ouvir ${s}`,
+      heroBrowse: 'Ver todas as músicas',
+      stickyPlay: 'Ouvir o novo',
+      listenNote: 'Siga para ouvir as músicas novas antes de todo mundo.',
+      storyTitle: ['Naquele dia,', 'ficaram palavras por dizer.'],
+      storyLines: ['Eu te amava, mas nunca disse.', 'No fundo, eu queria que você ficasse.', 'Se ao menos eu tivesse dito a verdade.'],
+      scenes: [
+        ['Numa noite qualquer,', 'alguém volta à lembrança.'],
+        ['As palavras que eu não disse', 'ainda moram no meu peito.'],
+        ['A cidade continua a mesma,', 'só você não está mais aqui.'],
+        ['Até o tempo que não volta', 'foi uma lembrança preciosa.'],
+        ['Que bom', 'que aquele amor existiu.'],
+      ],
+      musicTitle: 'Histórias de amor que ficam no coração.',
+      musicSub: ['Para sentir aqueles dias mais uma vez.', 'Baladas originais de J-POP da Nowa Music.'],
+      latest: 'Álbum mais recente',
+      albums: 'Álbuns e playlists',
+      singles: 'Singles',
+      playLatest: 'Ouvir',
+      allAlbums: 'Ver todos os álbuns',
+      aboutCopy: ['Até o que nunca foi dito', 'é prova de que houve amor.'],
+      aboutBody: [
+        ['Nowa Music é uma marca artística que traduz amores do passado, e os sentimentos que não puderam ser ditos, em música, imagens e histórias.'],
+        ['Alguém que não dá para esquecer.', 'Um tempo que não volta mais.', 'Palavras daquele dia que ainda ficaram.'],
+        ['Fazendo companhia, em silêncio, a essas lembranças, até que a saudade, um dia, se torne uma memória serena.'],
+        ['É essa a música que a Nowa Music quer entregar.'],
+      ],
+      readMore: 'Ler mais',
+      listenTitle: ['Uma música que fica, em silêncio,', 'ao lado das suas lembranças.'],
+    },
+    charts: {
+      nav: 'CHART',
+      title: 'Histórico nas paradas',
+      description: 'Nowa Music nas paradas da iTunes Store: posição atual e melhor posição em cada país.',
+      lead: 'Posição atual e melhor posição em cada país. A melhor posição traz a data em que foi alcançada pela primeira vez.',
+      asOf: (d, t) => `Atualizado em ${d}, ${t} (horário do Japão)`,
+      summaryOnes: (n) => `Nº 1 em ${n} ${n === 1 ? 'país' : 'países'}`,
+      summaryNow: (n) => `Nas paradas de ${n} ${n === 1 ? 'país' : 'países'} agora`,
+      featured: 'Música em destaque',
+      allSongs: 'Todas as músicas',
+      filterAll: (n) => `Todas (${n})`,
+      filterNow: (n) => `Nas paradas agora (${n})`,
+      filterOnes: (n) => `Nº 1 (${n})`,
+      current: 'Agora',
+      best: 'Melhor',
+      out: 'Fora',
+      rank: (n) => `Nº ${n}`,
+      gap: (n) => `${n} da melhor`,
+      gotOne: 'Nº 1',
+      legendCurrent: 'Posição atual',
+      legendBest: 'Melhor posição',
+      legendBar: 'A barra vai do Nº 1 (esquerda) ao Nº 100 (direita)',
+      listen: 'Ouvir esta música',
+      source: 'Dados: informações de paradas da TuneCore Japan (atualizadas toda manhã)',
+      heroTitle: (ones, now) => (ones > 0 ? `Nº 1 no iTunes J-Pop em ${ones} países` : `Nas paradas do iTunes em ${now} países`),
+      newsLink: 'Ver o histórico mais recente nas paradas',
+      empty: 'Ainda não há registros nas paradas.',
+      allGenres: 'Geral',
+    },
+    news: {
+      title: 'Notícias',
+      description: 'Novidades da Nowa Music: paradas e lançamentos.',
+      current: 'Posição atual',
+      past: 'Posições anteriores',
+      asOf: (d) => `Em ${d}`,
+      rank: (n) => `Nº ${n}`,
+      back: 'Todas as notícias',
+      empty: 'Ainda não há notícias.',
+      charts: { 'itunes-jpop-songs': 'iTunes Store · J-Pop Top Songs', 'itunes-all-songs': 'iTunes Store · Top Songs (geral)' },
+    },
+    music: {
+      title: 'Músicas para deixar tocando até a noite acabar.',
+      description: 'Álbuns e músicas novas da Nowa Music. Baladas suaves de J-POP com voz feminina.',
+      more: 'Ouvir mais (canal no YouTube)',
+    },
+    about: {
+      description: 'Sobre a Nowa Music. Baladas suaves de J-POP com voz feminina, para fazer companhia nas noites.',
+      lead: 'O que eu nunca disse, virou música.',
+      facts: [
+        { label: 'Gênero', value: 'J-POP / Balada / Voz feminina' },
+      ],
+      paragraphs: [
+        ['Nowa Music é uma marca artística que traduz os amores daquela época, e os sentimentos que nunca foram ditos, em música, imagens e histórias.'],
+        ['Eu te amava, mas não disse.', 'Queria que você ficasse, mas me despedi sorrindo.', 'Se ao menos eu tivesse dito a verdade naquela hora.'],
+        ['Talvez todo mundo guarde, em algum canto do coração, um "e se" assim.'],
+        ['Mesmo com o passar do tempo, há alguém que não dá para esquecer.', 'Já faz anos, e ainda assim, de repente, as paisagens daquele tempo voltam.'],
+        ['Não é que eu queira voltar.', 'Também não é que eu queira esquecer.'],
+        ['Só quero lembrar, com delicadeza, do que eu sentia naquele tempo.'],
+        ['A música da Nowa existe para esses momentos.'],
+        ['Não precisa esquecer.', 'Não precisa se obrigar a seguir em frente.'],
+        ['As palavras que não foram ditas e o amor que não aconteceu são a prova de que você amou alguém de verdade.'],
+        ['Um dia, as lembranças doídas vão se tornar memórias ternas.'],
+        ['E, numa noite qualquer,', 'que você possa pensar: "Que bom que aquele amor existiu."'],
+        ['Com esse desejo, cada música é feita com calma, uma de cada vez.'],
+        ['A Nowa Music se dedica principalmente a baladas originais de J-POP com voz feminina, trazendo músicas, álbuns e vídeos que contam histórias de amor.'],
+      ],
+    },
+  },
+  // インドネシア語。恋の歌でよく使う「aku／kamu」で、近くで語りかけるような柔らかさにする
+  id: {
+    htmlLang: 'id',
+    siteDescription: 'Yang tak sempat terucap, kini menjadi lagu. Nowa Music bercerita tentang cinta yang telah berlalu dan kata-kata yang tak tersampaikan, lewat balada J-POP, visual, dan kisah.',
+    nav: { label: 'Menu utama', music: 'MUSIC', about: 'ABOUT', listen: 'LISTEN' },
+    footer: { message: 'Yang tak sempat terucap, kini menjadi lagu.', links: 'Tautan eksternal', analytics: 'Situs ini menggunakan Google Analytics.' },
+    player: { label: 'Pemutar', close: 'Tutup' },
+    trackCount: (n) => `${n} lagu`,
+    home: {
+      heroCopy: ['Yang tak sempat terucap,', 'kini menjadi lagu.'],
+      heroSub: ['Kata-kata yang dulu tak sempat kusampaikan.', 'Seseorang yang masih tertinggal di hati.'],
+      heroCta: 'Dengarkan musiknya',
+      heroPlay: 'Putar karya terbaru',
+      heroPlaySong: (s) => `Putar ${s}`,
+      heroBrowse: 'Lihat semua lagu',
+      stickyPlay: 'Putar terbaru',
+      listenNote: 'Ikuti untuk mendengar lagu baru lebih dulu.',
+      storyTitle: ['Di hari itu,', 'ada kata yang tak sempat terucap.'],
+      storyLines: ['Aku mencintaimu, tapi tak pernah mengatakannya.', 'Sebenarnya, aku ingin menahanmu pergi.', 'Andai saat itu aku lebih jujur.'],
+      scenes: [
+        ['Di suatu malam yang sunyi,', 'seseorang kembali teringat.'],
+        ['Kata-kata yang tak tersampaikan', 'masih tinggal di hatiku.'],
+        ['Kota ini tak berubah sedikit pun,', 'hanya kamu yang tak lagi ada.'],
+        ['Waktu yang tak bisa kembali pun', 'adalah kenangan yang berharga.'],
+        ['Aku bersyukur', 'cinta itu pernah ada.'],
+      ],
+      musicTitle: 'Kisah cinta yang tinggal di hati.',
+      musicSub: ['Rasakan lagi hari-hari itu.', 'Balada J-POP orisinal dari Nowa Music.'],
+      latest: 'Album terbaru',
+      albums: 'Album & playlist',
+      singles: 'Single',
+      playLatest: 'Putar',
+      allAlbums: 'Lihat semua album',
+      aboutCopy: ['Perasaan yang tak terucap pun', 'adalah bukti bahwa kamu pernah mencinta.'],
+      aboutBody: [
+        ['Nowa Music adalah brand artis yang mengungkapkan cinta di masa lalu, dan perasaan yang dulu tak sempat tersampaikan, lewat musik, visual, dan kisah.'],
+        ['Seseorang yang tak bisa dilupakan.', 'Waktu yang tak bisa kembali.', 'Kata-kata hari itu yang masih tertinggal di hati.'],
+        ['Menemani kenangan itu dengan lembut, hingga yang dulu terasa perih perlahan menjadi kenangan yang hangat.'],
+        ['Itulah musik yang ingin dihadirkan Nowa Music.'],
+      ],
+      readMore: 'Baca selengkapnya',
+      listenTitle: ['Musik yang menemani', 'kenanganmu dengan lembut.'],
+    },
+    charts: {
+      nav: 'CHART',
+      title: 'Riwayat tangga lagu',
+      description: 'Nowa Music di tangga lagu iTunes Store: posisi saat ini dan posisi tertinggi di setiap negara.',
+      lead: 'Posisi saat ini dan posisi tertinggi di setiap negara. Posisi tertinggi disertai tanggal pertama kali dicapai.',
+      asOf: (d, t) => `Per ${d}, ${t} waktu Jepang`,
+      summaryOnes: (n) => `No.1 di ${n} negara`,
+      summaryNow: (n) => `Masuk tangga lagu di ${n} negara saat ini`,
+      featured: 'Lagu unggulan',
+      allSongs: 'Semua lagu',
+      filterAll: (n) => `Semua (${n})`,
+      filterNow: (n) => `Sedang di tangga lagu (${n})`,
+      filterOnes: (n) => `Lagu No.1 (${n})`,
+      current: 'Kini',
+      best: 'Tertinggi',
+      out: 'Di luar',
+      rank: (n) => `No.${n}`,
+      gap: (n) => `${n} lagi ke posisi tertinggi`,
+      gotOne: 'No.1',
+      legendCurrent: 'Posisi saat ini',
+      legendBest: 'Posisi tertinggi',
+      legendBar: 'Ujung kiri No.1, ujung kanan No.100',
+      listen: 'Dengarkan lagu ini',
+      source: 'Data: informasi tangga lagu dari TuneCore Japan (diperbarui setiap pagi)',
+      heroTitle: (ones, now) => (ones > 0 ? `No.1 iTunes J-Pop di ${ones} negara` : `Masuk tangga lagu iTunes di ${now} negara`),
+      newsLink: 'Lihat riwayat tangga lagu terbaru',
+      empty: 'Belum ada catatan tangga lagu.',
+      allGenres: 'Semua genre',
+    },
+    news: {
+      title: 'Kabar',
+      description: 'Kabar terbaru dari Nowa Music: tangga lagu dan rilisan baru.',
+      current: 'Peringkat saat ini',
+      past: 'Peringkat sebelumnya',
+      asOf: (d) => `Per ${d}`,
+      rank: (n) => `No.${n}`,
+      back: 'Semua kabar',
+      empty: 'Belum ada kabar.',
+      charts: { 'itunes-jpop-songs': 'iTunes Store · J-Pop Top Songs', 'itunes-all-songs': 'iTunes Store · Top Songs Semua Genre' },
+    },
+    music: {
+      title: 'Lagu untuk menemani hingga malam berakhir.',
+      description: 'Album dan lagu terbaru dari Nowa Music. Balada J-POP lembut dengan vokal perempuan.',
+      more: 'Dengarkan lebih banyak (kanal YouTube)',
+    },
+    about: {
+      description: 'Tentang Nowa Music. Balada J-POP lembut dengan vokal perempuan yang menemani malam-malammu.',
+      lead: 'Yang tak sempat terucap, kini menjadi lagu.',
+      facts: [
+        { label: 'Genre', value: 'J-POP / Balada / Vokal perempuan' },
+      ],
+      paragraphs: [
+        ['Nowa Music adalah brand artis yang mengungkapkan cinta di masa itu, dan perasaan yang tak pernah tersampaikan, lewat musik, visual, dan kisah.'],
+        ['Aku mencintaimu, tapi tak pernah mengatakannya.', 'Sebenarnya aku ingin menahanmu, tapi aku justru tersenyum dan berpamitan.', 'Andai saat itu aku lebih jujur.'],
+        ['Mungkin setiap orang menyimpan "andai saja" seperti itu di dalam hatinya.'],
+        ['Meski waktu berlalu, ada seseorang yang tak bisa dilupakan.', 'Sudah bertahun-tahun lamanya, tapi di saat tak terduga, suasana masa itu kembali hadir.'],
+        ['Bukan karena ingin kembali.', 'Bukan juga karena ingin melupakan.'],
+        ['Hanya ingin mengingat lagi, perlahan, perasaan di masa itu.'],
+        ['Musik Nowa ada untuk saat-saat seperti itu.'],
+        ['Tak perlu melupakan.', 'Tak perlu memaksa diri untuk melangkah maju.'],
+        ['Kata-kata yang tak terucap dan cinta yang tak sampai adalah bukti bahwa kamu pernah begitu menyayangi seseorang.'],
+        ['Suatu hari, kenangan yang perih akan menjadi kenangan yang hangat.'],
+        ['Dan di suatu malam yang sunyi,', 'semoga kamu bisa berkata, "Aku bersyukur cinta itu pernah ada."'],
+        ['Dengan harapan itu, setiap lagu dibuat satu per satu.'],
+        ['Nowa Music menghadirkan balada J-POP orisinal dengan vokal perempuan, beserta lagu, album, dan karya video yang mengisahkan cinta.'],
+      ],
+    },
+  },
+  // タイ語。タイの恋の歌でよく使う「ฉัน／เธอ」と、柔らかく余韻のある言い回しにする
+  th: {
+    htmlLang: 'th',
+    siteDescription: 'ความรู้สึกที่ไม่เคยได้พูดออกไป กลายเป็นเพลง Nowa Music เล่าเรื่องราวของความรักที่ผ่านไป และถ้อยคำที่ไม่เคยได้บอก ผ่านเพลงบัลลาด J-POP ภาพ และเรื่องราว',
+    nav: { label: 'เมนูหลัก', music: 'MUSIC', about: 'ABOUT', listen: 'LISTEN' },
+    footer: { message: 'ความรู้สึกที่ไม่เคยได้พูดออกไป กลายเป็นเพลง', links: 'ลิงก์ภายนอก', analytics: 'เว็บไซต์นี้ใช้ Google Analytics' },
+    player: { label: 'เครื่องเล่น', close: 'ปิด' },
+    trackCount: (n) => `${n} เพลง`,
+    home: {
+      heroCopy: ['ความรู้สึกที่ไม่เคยได้พูดออกไป', 'กลายเป็นเพลง'],
+      heroSub: ['คำที่ไม่ได้บอกในวันนั้น', 'คนที่ยังลืมไม่ลงจนถึงวันนี้'],
+      heroCta: 'ฟังเพลง',
+      heroPlay: 'เล่นผลงานล่าสุด',
+      heroPlaySong: (s) => `เล่น ${s}`,
+      heroBrowse: 'ดูเพลงทั้งหมด',
+      stickyPlay: 'ฟังเพลงล่าสุด',
+      listenNote: 'กดติดตาม เพื่อฟังเพลงใหม่ก่อนใคร',
+      storyTitle: ['วันนั้น', 'มีคำที่ไม่ได้พูดออกไป'],
+      storyLines: ['ทั้งที่รัก แต่กลับไม่ได้บอก', 'ที่จริงแล้ว อยากรั้งเธอไว้', 'ถ้าตอนนั้นซื่อตรงกับหัวใจมากกว่านี้'],
+      scenes: [
+        ['ในค่ำคืนธรรมดาคืนหนึ่ง', 'ใครบางคนก็หวนกลับมาในความคิด'],
+        ['คำที่ไม่ได้บอกออกไป', 'ยังคงอยู่ในใจจนถึงวันนี้'],
+        ['เมืองที่ไม่เคยเปลี่ยนไป', 'มีเพียงเธอที่ไม่อยู่ตรงนั้นแล้ว'],
+        ['แม้เวลาที่ย้อนกลับไปไม่ได้', 'ก็เป็นความทรงจำที่มีค่า'],
+        ['ดีใจ', 'ที่ครั้งหนึ่งเคยมีรักนั้น'],
+      ],
+      musicTitle: 'เรื่องราวความรักที่ยังอยู่ในใจ',
+      musicSub: ['ให้ความรู้สึกในวันนั้นกลับมาอีกครั้ง', 'เพลงบัลลาด J-POP ต้นฉบับจาก Nowa Music'],
+      latest: 'อัลบั้มล่าสุด',
+      albums: 'อัลบั้มและเพลย์ลิสต์',
+      singles: 'ซิงเกิล',
+      playLatest: 'เล่น',
+      allAlbums: 'ดูอัลบั้มทั้งหมด',
+      aboutCopy: ['แม้ความรู้สึกที่ไม่ได้พูดออกไป', 'ก็คือหลักฐานว่าเคยรัก'],
+      aboutBody: [
+        ['Nowa Music คือแบรนด์ศิลปินที่ถ่ายทอดความรักในวันวาน และความรู้สึกที่ไม่เคยได้บอกในตอนนั้น ผ่านเพลง ภาพ และเรื่องราว'],
+        ['คนที่ลืมไม่ลง', 'เวลาที่ย้อนกลับไปไม่ได้', 'ถ้อยคำในวันนั้นที่ยังติดอยู่ในใจ'],
+        ['อยู่เคียงข้างความทรงจำเหล่านั้นอย่างเงียบ ๆ จนวันหนึ่ง ความเจ็บปวดค่อย ๆ กลายเป็นความทรงจำที่อ่อนโยน'],
+        ['นี่คือเพลงที่ Nowa Music อยากส่งถึงคุณ'],
+      ],
+      readMore: 'อ่านต่อ',
+      listenTitle: ['เพลงที่อยู่เคียงข้าง', 'ความทรงจำของคุณอย่างแผ่วเบา'],
+    },
+    charts: {
+      nav: 'CHART',
+      title: 'สถิติบนชาร์ต',
+      description: 'Nowa Music บนชาร์ต iTunes Store: อันดับปัจจุบันและอันดับสูงสุดในแต่ละประเทศ',
+      lead: 'แสดงอันดับปัจจุบันและอันดับสูงสุดของแต่ละประเทศ พร้อมวันที่ที่ขึ้นถึงอันดับสูงสุดเป็นครั้งแรก',
+      asOf: (d, t) => `ข้อมูล ณ ${d} เวลา ${t} (เวลาญี่ปุ่น)`,
+      summaryOnes: (n) => `อันดับ 1 ใน ${n} ประเทศ`,
+      summaryNow: (n) => `ติดชาร์ตอยู่ใน ${n} ประเทศ`,
+      featured: 'เพลงเด่น',
+      allSongs: 'เพลงทั้งหมด',
+      filterAll: (n) => `ทั้งหมด (${n})`,
+      filterNow: (n) => `ติดชาร์ตอยู่ (${n})`,
+      filterOnes: (n) => `เพลงอันดับ 1 (${n})`,
+      current: 'ตอนนี้',
+      best: 'สูงสุด',
+      out: 'ไม่ติดชาร์ต',
+      rank: (n) => `อันดับ ${n}`,
+      gap: (n) => `อีก ${n} อันดับถึงสูงสุด`,
+      gotOne: 'อันดับ 1',
+      legendCurrent: 'อันดับปัจจุบัน',
+      legendBest: 'อันดับสูงสุด',
+      legendBar: 'ซ้ายสุดคืออันดับ 1 ขวาสุดคืออันดับ 100',
+      listen: 'ฟังเพลงนี้',
+      source: 'ข้อมูล: การติดชาร์ตจาก TuneCore Japan (อัปเดตทุกเช้า)',
+      heroTitle: (ones, now) => (ones > 0 ? `อันดับ 1 iTunes J-Pop ใน ${ones} ประเทศ` : `ติดชาร์ต iTunes ใน ${now} ประเทศ`),
+      newsLink: 'ดูสถิติบนชาร์ตล่าสุด',
+      empty: 'ยังไม่มีสถิติบนชาร์ต',
+      allGenres: 'ทุกแนว',
+    },
+    news: {
+      title: 'ข่าวสาร',
+      description: 'ข่าวล่าสุดจาก Nowa Music: ชาร์ตเพลงและผลงานใหม่',
+      current: 'อันดับปัจจุบัน',
+      past: 'อันดับที่ผ่านมา',
+      asOf: (d) => `ณ ${d}`,
+      rank: (n) => `อันดับ ${n}`,
+      back: 'ข่าวสารทั้งหมด',
+      empty: 'ยังไม่มีข่าวสาร',
+      charts: { 'itunes-jpop-songs': 'iTunes Store · J-Pop Top Songs', 'itunes-all-songs': 'iTunes Store · Top Songs ทุกแนว' },
+    },
+    music: {
+      title: 'เพลงที่เปิดฟังได้จนค่ำคืนสิ้นสุด',
+      description: 'อัลบั้มและเพลงใหม่จาก Nowa Music บัลลาด J-POP แผ่วเบาด้วยเสียงร้องหญิง',
+      more: 'ฟังเพิ่มเติม (ช่อง YouTube)',
+    },
+    about: {
+      description: 'เกี่ยวกับ Nowa Music บัลลาด J-POP แผ่วเบาด้วยเสียงร้องหญิง ที่อยู่เคียงข้างคุณในยามค่ำคืน',
+      lead: 'ความรู้สึกที่ไม่เคยได้พูดออกไป กลายเป็นเพลง',
+      facts: [
+        { label: 'แนวเพลง', value: 'J-POP / บัลลาด / เสียงร้องหญิง' },
+      ],
+      paragraphs: [
+        ['Nowa Music คือแบรนด์ศิลปินที่ถ่ายทอดความรักในวันวาน และความรู้สึกที่ไม่เคยได้บอกออกไป ผ่านเพลง ภาพ และเรื่องราว'],
+        ['ทั้งที่รัก แต่กลับไม่ได้บอก', 'ที่จริงอยากรั้งไว้ แต่กลับยิ้มแล้วบอกลา', 'ถ้าตอนนั้นซื่อตรงกับหัวใจมากกว่านี้'],
+        ['บางที ทุกคนอาจมี "ถ้าตอนนั้น..." แบบนี้ซ่อนอยู่ในใจ'],
+        ['แม้เวลาจะผ่านไป ก็ยังมีใครสักคนที่ลืมไม่ลง', 'ทั้งที่เป็นเรื่องเมื่อหลายปีก่อน แต่บางขณะ ภาพในวันนั้นก็หวนกลับมา'],
+        ['ไม่ใช่เพราะอยากย้อนกลับไป', 'และก็ไม่ใช่เพราะอยากลืม'],
+        ['เพียงแค่อยากนึกถึงความรู้สึกในวันนั้นอีกครั้ง อย่างแผ่วเบา'],
+        ['เพลงของ Nowa มีไว้เพื่อช่วงเวลาแบบนั้น'],
+        ['ไม่ต้องลืมก็ได้', 'ไม่ต้องฝืนก้าวต่อไปก็ได้'],
+        ['คำที่ไม่ได้พูด และความรักที่ไม่สมหวัง คือหลักฐานว่าเราเคยรักใครสักคนอย่างจริงใจ'],
+        ['สักวัน ความทรงจำที่เจ็บปวดจะกลายเป็นความทรงจำที่อ่อนโยน'],
+        ['และในค่ำคืนธรรมดาคืนหนึ่ง', 'ขอให้คุณได้คิดว่า "ดีใจที่ครั้งหนึ่งเคยมีรักนั้น"'],
+        ['ด้วยความหวังนั้น เพลงทุกเพลงจึงถูกสร้างขึ้นทีละเพลง'],
+        ['Nowa Music นำเสนอบัลลาด J-POP ต้นฉบับด้วยเสียงร้องหญิงเป็นหลัก พร้อมเพลง อัลบั้ม และผลงานวิดีโอที่เล่าเรื่องราวของความรัก'],
+      ],
+    },
+  },
 };
 
 /**
@@ -474,11 +811,14 @@ export const LANG_SUGGEST = {
   en: { text: 'This site is also available in English.', go: 'View in English' },
   ko: { text: '이 사이트는 한국어로도 볼 수 있어요.', go: '한국어로 보기' },
   'zh-tw': { text: '本網站也提供繁體中文版本。', go: '查看繁體中文版' },
+  'pt-br': { text: 'Este site também está disponível em português.', go: 'Ver em português' },
+  id: { text: 'Situs ini juga tersedia dalam Bahasa Indonesia.', go: 'Lihat dalam Bahasa Indonesia' },
+  th: { text: 'เว็บไซต์นี้มีภาษาไทยด้วย', go: 'ดูภาษาไทย' },
 };
 
 /**
  * ブラウザの言語設定（navigator.languages）から、案内すべき言語を返す。
- * 日本語を含む設定なら案内しない（null）。韓国語・中国語（繁体／台湾・香港）以外の外国語は英語へ。
+ * 日本語を含む設定なら案内しない（null）。韓国語・中国語（繁体／台湾・香港）・ポルトガル語・インドネシア語・タイ語以外の外国語は英語へ。
  * 簡体字（zh-CN など）は繁体字ページを出すより英語の方が無難なので英語にする。
  */
 export function suggestLang(navLangs = []) {
@@ -487,5 +827,8 @@ export function suggestLang(navLangs = []) {
   const first = list[0];
   if (first === 'ko' || first.startsWith('ko-')) return 'ko';
   if (/^zh-(tw|hk|mo|hant)/.test(first)) return 'zh-tw';
+  if (first === 'pt' || first.startsWith('pt-')) return 'pt-br';
+  if (first === 'id' || first.startsWith('id-') || first === 'in') return 'id';
+  if (first === 'th' || first.startsWith('th-')) return 'th';
   return 'en';
 }
