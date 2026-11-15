@@ -63,8 +63,8 @@ const checkedTime = raw.checkedAt
                     <div class="row__line">
                       <span class="row__country">{countryName(r.country, lang)}{chartTag(r) && <span class="row__tag">{chartTag(r)}</span>}</span>
                       <span class="row__nums">
-                        <span class="row__label">{c.current}</span>
-                        {r.current != null ? <span class="row__current">{c.rank(r.current)}</span> : <span class="row__out">{c.out}</span>}
+                        {/* いまランクインしている国だけ「現在◯位」を出す。圏外のときは最高位だけを出す */}
+                        {r.current != null && (<><span class="row__label">{c.current}</span><span class="row__current">{c.rank(r.current)}</span></>)}
                         <span class="row__label">{c.best}</span>
                         <span class:list={['row__best', r.best === 1 && 'row__best--one']}>{c.rank(r.best)}</span>
                         <span class="row__date">{shortDate(r.bestDate)}</span>
@@ -112,8 +112,8 @@ const checkedTime = raw.checkedAt
                             <div class="row__line">
                               <span class="row__country">{countryName(r.country, lang)}{chartTag(r) && <span class="row__tag">{chartTag(r)}</span>}</span>
                               <span class="row__nums">
-                                <span class="row__label">{c.current}</span>
-                                {r.current != null ? <span class="row__current">{c.rank(r.current)}</span> : <span class="row__out">{c.out}</span>}
+                                {/* いまランクインしている国だけ「現在◯位」を出す。圏外のときは最高位だけを出す */}
+                                {r.current != null && (<><span class="row__label">{c.current}</span><span class="row__current">{c.rank(r.current)}</span></>)}
                                 <span class="row__label">{c.best}</span>
                                 <span class:list={['row__best', r.best === 1 && 'row__best--one']}>{c.rank(r.best)}</span>
                                 <span class="row__date">{shortDate(r.bestDate)}</span>
@@ -235,13 +235,6 @@ const checkedTime = raw.checkedAt
   .row__current, .row__best { font-family: var(--font-display); font-size: 1.25rem; line-height: 1; }
   .row__current { color: var(--accent); margin-right: 0.35rem; }
   .row__best--one { color: var(--amber); }
-  .row__out {
-    margin-right: 0.35rem;
-    padding: 0.05rem 0.45rem;
-    background: var(--line);
-    font-size: 0.66rem;
-    color: var(--text-dim);
-  }
   .row__date { font-size: 0.68rem; color: var(--text-dim); }
   .row__gap {
     display: inline-block;
