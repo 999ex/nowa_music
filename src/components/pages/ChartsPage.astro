@@ -1,0 +1,334 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import raw from '../../data/charts.json';
+import { messages } from '../../lib/i18n.js';
+import { formatDate, countryName } from '../../lib/news.js';
+import { numberOneCountries, currentCountries, songStats, rowView } from '../../lib/charts.js';
+
+const { lang = 'ja' } = Astro.props;
+const c = messages[lang].charts;
+
+const songs = (raw.songs ?? []).filter((s) => s.rows.length > 0);
+const [featured, ...others] = songs;
+const ones = numberOneCountries(songs);
+const nowCount = currentCountries(songs);
+const counts = {
+  all: songs.length,
+  now: songs.filter((s) => songStats(s).charting).length,
+  ones: songs.filter((s) => songStats(s).ones > 0).length,
+};
+
+// 総合チャートなど J-Pop 以外の記録には、国名の横に小さな札を付けて見分けられるようにする
+const chartTag = (row) => (row.chart.endsWith('-jpop-songs') ? null : row.chart.endsWith('-all-songs') ? c.allGenres : row.chartLabel);
+const shortDate = (ymd) => (ymd ? ymd.replaceAll('-', '/') : '');
+const checkedTime = raw.checkedAt
+  ? new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit' }).format(new Date(raw.checkedAt))
+  : '';
+---
+
+<BaseLayout title="CHART" description={c.description} lang={lang}>
+  <main>
+    <section class="section head">
+      <div class="container">
+        <div class="section__head">
+          <p class="section__label">CHART</p>
+          <h1 class="section__title page__title">{c.title}</h1>
+        </div>
+        <p class="lead">{c.lead}</p>
+        <div class="summary">
+          {ones > 0 && <span class="summary__item summary__item--gold">{c.summaryOnes(ones)}</span>}
+          {nowCount > 0 && <span class="summary__item">{c.summaryNow(nowCount)}</span>}
+          {raw.checkedDate && <span class="summary__asof">{c.asOf(formatDate(raw.checkedDate, lang), checkedTime)}</span>}
+        </div>
+      </div>
+    </section>
+
+    {songs.length === 0 ? (
+      <section class="section"><div class="container"><p>{c.empty}</p></div></section>
+    ) : (
+      <>
+        <!-- 代表曲：1位を取った国が一番多い曲 -->
+        <section class="section featured-section">
+          <div class="container">
+            <h2 class="block-title">{c.featured}</h2>
+            <article class="card card--featured">
+              <p class="card__eyebrow">FEATURED</p>
+              <div class="card__head">
+                <h3 class="card__title card__title--big">{featured.title}</h3>
+                <a class="card__listen" href={featured.url} target="_blank" rel="noopener">{c.listen}<span aria-hidden="true">↗</span></a>
+              </div>
+              <ul class="rows rows--two">
+                {featured.rows.map(rowView).map((r) => (
+                  <li class="row">
+                    <div class="row__line">
+                      <span class="row__country">{countryName(r.country, lang)}{chartTag(r) && <span class="row__tag">{chartTag(r)}</span>}</span>
+                      <span class="row__nums">
+                        <span class="row__label">{c.current}</span>
+                        {r.current != null ? <span class="row__current">{c.rank(r.current)}</span> : <span class="row__out">{c.out}</span>}
+                        <span class="row__label">{c.best}</span>
+                        <span class:list={['row__best', r.best === 1 && 'row__best--one']}>{c.rank(r.best)}</span>
+                        <span class="row__date">{shortDate(r.bestDate)}</span>
+                      </span>
+                    </div>
+                    {r.gap != null && <span class="row__gap">{c.gap(r.gap)}</span>}
+                    <div class="bar" aria-hidden="true">
+                      <span class="bar__best" style={`--x: ${r.bestPos}%`}></span>
+                      {r.currentPos != null && <span class="bar__current" style={`--x: ${r.currentPos}%`}></span>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <p class="legend">
+                <span class="legend__current">{c.legendCurrent}</span>
+                <span class="legend__best">{c.legendBest}</span>
+                <span>{c.legendBar}</span>
+              </p>
+            </article>
+          </div>
+        </section>
+
+        {others.length > 0 && (
+          <section class="section all-section">
+            <div class="container">
+              <h2 class="block-title">{c.allSongs}</h2>
+              <!-- 絞り込み。JSが動かない環境では全曲がそのまま並ぶ -->
+              <div class="filters" role="group" aria-label={c.allSongs} data-filters hidden>
+                <button type="button" class="filter is-active" data-filter="all" aria-pressed="true">{c.filterAll(counts.all)}</button>
+                <button type="button" class="filter" data-filter="now" aria-pressed="false">{c.filterNow(counts.now)}</button>
+                <button type="button" class="filter" data-filter="ones" aria-pressed="false">{c.filterOnes(counts.ones)}</button>
+              </div>
+              <div class="cards">
+                {songs.map((song) => {
+                  const stats = songStats(song);
+                  return (
+                    <article class="card" data-now={stats.charting ? '' : undefined} data-ones={stats.ones > 0 ? '' : undefined}>
+                      <div class="card__head">
+                        <h3 class="card__title">{song.title}</h3>
+                        {stats.ones > 0 && <span class="badge">{c.gotOne}</span>}
+                      </div>
+                      <ul class="rows">
+                        {song.rows.map(rowView).map((r) => (
+                          <li class="row">
+                            <div class="row__line">
+                              <span class="row__country">{countryName(r.country, lang)}{chartTag(r) && <span class="row__tag">{chartTag(r)}</span>}</span>
+                              <span class="row__nums">
+                                <span class="row__label">{c.current}</span>
+                                {r.current != null ? <span class="row__current">{c.rank(r.current)}</span> : <span class="row__out">{c.out}</span>}
+                                <span class="row__label">{c.best}</span>
+                                <span class:list={['row__best', r.best === 1 && 'row__best--one']}>{c.rank(r.best)}</span>
+                                <span class="row__date">{shortDate(r.bestDate)}</span>
+                              </span>
+                            </div>
+                            {r.gap != null && <span class="row__gap">{c.gap(r.gap)}</span>}
+                            <div class="bar" aria-hidden="true">
+                              <span class="bar__best" style={`--x: ${r.bestPos}%`}></span>
+                              {r.currentPos != null && <span class="bar__current" style={`--x: ${r.currentPos}%`}></span>}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                      <a class="card__listen" href={song.url} target="_blank" rel="noopener">{c.listen}<span aria-hidden="true">↗</span></a>
+                    </article>
+                  );
+                })}
+              </div>
+              <p class="source">{c.source}</p>
+            </div>
+          </section>
+        )}
+      </>
+    )}
+  </main>
+</BaseLayout>
+
+<style>
+  .head { padding-top: 9rem; padding-bottom: 2rem; }
+  .lead { max-width: 40rem; color: var(--text-dim); font-size: 0.9rem; margin: 0 0 1.5rem; }
+  .summary { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 0.8rem; }
+  .summary__item {
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--line);
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+  }
+  .summary__item--gold { border-color: var(--amber); color: var(--amber); }
+  .summary__asof { font-size: 0.75rem; letter-spacing: 0.06em; color: var(--text-dim); }
+
+  .featured-section { padding-top: 1rem; }
+  .block-title {
+    font-size: clamp(1.15rem, 3.6vw, 1.5rem);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    margin: 0 0 1.25rem;
+  }
+
+  .card {
+    padding: 1.4rem 1.1rem 1.25rem;
+    border: 1px solid var(--line);
+    background: var(--bg-glow);
+  }
+  @media (min-width: 48rem) { .card { padding: 1.75rem 1.6rem 1.5rem; } }
+  .card--featured {
+    border-color: var(--amber-glow);
+    background: linear-gradient(160deg, var(--bg-far), var(--bg-deep));
+    box-shadow: 0 1.5rem 3rem -2rem var(--scrim-night);
+  }
+  .card__eyebrow {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    letter-spacing: 0.32em;
+    color: var(--amber);
+    margin: 0 0 0.6rem;
+  }
+  .card__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .card__title { font-size: 1.05rem; font-weight: 400; line-height: 1.6; margin: 0; letter-spacing: 0.04em; }
+  .card__title--big { font-size: clamp(1.3rem, 5vw, 2rem); font-weight: 300; }
+  .card__listen {
+    display: inline-flex;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.1rem;
+  }
+  .card > .card__listen { margin-top: 1rem; }
+  .badge {
+    flex: none;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+  }
+
+  .rows { list-style: none; margin: 0; padding: 0; }
+  @media (min-width: 64rem) {
+    .rows--two { display: grid; grid-template-columns: 1fr 1fr; column-gap: 2.5rem; }
+  }
+  .row { padding: 0.8rem 0 0.7rem; border-bottom: 1px dashed var(--line); }
+  /* 国名の長さに関係なく数字の位置がそろうよう、国名の幅を決めておく */
+  .row__line {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    align-items: baseline;
+    gap: 0.2rem 0.5rem;
+  }
+  .row__country { font-size: 0.85rem; letter-spacing: 0.02em; line-height: 1.5; }
+  .row__tag {
+    margin-left: 0.45rem;
+    padding: 0.05rem 0.4rem;
+    border: 1px solid var(--line);
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    vertical-align: middle;
+  }
+  .row__nums { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: flex-end; gap: 0.15rem 0.35rem; }
+  .row__label { font-size: 0.62rem; letter-spacing: 0.06em; color: var(--text-dim); }
+  .row__current, .row__best { font-family: var(--font-display); font-size: 1.25rem; line-height: 1; }
+  .row__current { color: var(--accent); margin-right: 0.35rem; }
+  .row__best--one { color: var(--amber); }
+  .row__out {
+    margin-right: 0.35rem;
+    padding: 0.05rem 0.45rem;
+    background: var(--line);
+    font-size: 0.66rem;
+    color: var(--text-dim);
+  }
+  .row__date { font-size: 0.68rem; color: var(--text-dim); }
+  .row__gap {
+    display: inline-block;
+    margin-top: 0.35rem;
+    padding: 0.1rem 0.6rem;
+    border-radius: 999px;
+    background: var(--line);
+    font-size: 0.66rem;
+    color: var(--text);
+  }
+
+  /* バー：左端が1位、右端が100位 */
+  .bar {
+    position: relative;
+    height: 4px;
+    margin: 0.6rem 0.35rem 0.1rem;
+    border-radius: 2px;
+    background: var(--line);
+  }
+  .bar__best, .bar__current {
+    position: absolute;
+    top: 50%;
+    left: var(--x);
+    translate: -50% -50%;
+  }
+  .bar__best { width: 9px; height: 9px; background: var(--amber); rotate: 45deg; }
+  .bar__current {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--bg-deep);
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.2rem;
+    margin: 1.1rem 0 0;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+  }
+  .legend__current::before,
+  .legend__best::before { content: ""; display: inline-block; margin-right: 0.4rem; vertical-align: middle; }
+  .legend__current::before { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .legend__best::before { width: 7px; height: 7px; background: var(--amber); rotate: 45deg; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 1.25rem; }
+  .filters[hidden] { display: none; }
+  .filter {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: none;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .filter.is-active { background: var(--text); color: var(--bg-deep); border-color: var(--text); }
+
+  .cards { display: grid; gap: 1rem; }
+  @media (min-width: 48rem) { .cards { grid-template-columns: 1fr 1fr; align-items: start; } }
+  .card.is-hidden { display: none; }
+
+  .source { margin: 2rem 0 0; font-size: 0.7rem; color: var(--text-dim); }
+</style>
+
+<script>
+  // 絞り込み（すべて／現在チャートイン中／1位獲得曲）
+  const filters = document.querySelector<HTMLElement>('[data-filters]');
+  const cards = document.querySelector<HTMLElement>('.cards');
+  if (filters && cards) {
+    filters.hidden = false;
+    filters.addEventListener('click', (event) => {
+      const button = (event.target as Element).closest<HTMLButtonElement>('[data-filter]');
+      if (!button) return;
+      const mode = button.dataset.filter;
+      for (const b of filters.querySelectorAll<HTMLButtonElement>('[data-filter]')) {
+        const active = b === button;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', String(active));
+      }
+      for (const card of cards.querySelectorAll<HTMLElement>('.card')) {
+        const show = mode === 'all' || (mode === 'now' && card.hasAttribute('data-now')) || (mode === 'ones' && card.hasAttribute('data-ones'));
+        card.classList.toggle('is-hidden', !show);
+      }
+    });
+  }
+</script>

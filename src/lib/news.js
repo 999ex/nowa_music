@@ -51,6 +51,8 @@ const COUNTRIES = {
   au: { ja: 'オーストラリア', en: 'Australia', ko: '호주', 'zh-tw': '澳洲' },
   ph: { ja: 'フィリピン', en: 'Philippines', ko: '필리핀', 'zh-tw': '菲律賓' },
   my: { ja: 'マレーシア', en: 'Malaysia', ko: '말레이시아', 'zh-tw': '馬來西亞' },
+  ch: { ja: 'スイス', en: 'Switzerland', ko: '스위스', 'zh-tw': '瑞士' },
+  nz: { ja: 'ニュージーランド', en: 'New Zealand', ko: '뉴질랜드', 'zh-tw': '紐西蘭' },
   th: { ja: 'タイ', en: 'Thailand', ko: '태국', 'zh-tw': '泰國' },
   id: { ja: 'インドネシア', en: 'Indonesia', ko: '인도네시아', 'zh-tw': '印尼' },
   it: { ja: 'イタリア', en: 'Italy', ko: '이탈리아', 'zh-tw': '義大利' },
@@ -61,6 +63,7 @@ const COUNTRIES = {
 /** 国コード（gb など）を各言語の国名にする。 */
 export function countryName(code, lang) {
   const key = String(code).toLowerCase();
+  if (!/^[a-z]{2}$/.test(key)) return String(code);
   const known = COUNTRIES[key];
   if (known) return known[lang] ?? known.en;
   try {

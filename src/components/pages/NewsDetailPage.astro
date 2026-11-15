@@ -5,6 +5,7 @@ import { pickText, toParagraphs, formatDate, countryName } from '../../lib/news.
 
 const { lang = 'ja', entry } = Astro.props;
 const m = messages[lang].news;
+const chartsText = messages[lang].charts;
 const { date, title, body, rankings, link } = entry.data;
 
 const heading = pickText(title, lang);
@@ -37,6 +38,12 @@ const description = paragraphs[0]?.join(' ') ?? m.description;
               <p>{lines.map((line, i) => (<>{i > 0 && <br />}{line}</>))}</p>
             ))}
           </div>
+        )}
+
+        {rankings && (
+          <p class="news__charts">
+            <a href={localePath(lang, '/charts/')}>{chartsText.newsLink}<span aria-hidden="true">→</span></a>
+          </p>
         )}
 
         {rankings && (
@@ -119,6 +126,16 @@ const description = paragraphs[0]?.join(' ') ?? m.description;
     margin: 0.75rem 0 2.5rem;
   }
   .news__body p { margin: 0 0 1.5rem; }
+  .news__charts { margin: 2rem 0 0; }
+  .news__charts a {
+    display: inline-flex;
+    gap: 1rem;
+    padding: 0.9rem 1.2rem;
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+  }
 
   .chart {
     margin-top: 3rem;

@@ -18,12 +18,24 @@ import { buildCatalog } from '../../lib/catalog.js';
 import { activeLinks } from '../../lib/links.js';
 import { messages, localePath } from '../../lib/i18n.js';
 import { pickText, sortNews } from '../../lib/news.js';
+import charts from '../../data/charts.json';
+import { numberOneCountries, currentCountries, latestRecordDate } from '../../lib/charts.js';
 
 const { lang = 'ja' } = Astro.props;
 const t = messages[lang].home;
 
 // 最初の画面に1行だけ出す最新のお知らせ。無ければ何も出さない
 const [latestNews] = sortNews(await getCollection('news', (e) => !e.data.draft));
+// チャート実績は毎朝自動で更新される。新しい最高位が出た日付が手書きのお知らせより新しければ、こちらを出す
+const chartSongs = charts.songs ?? [];
+const chartDate = latestRecordDate(chartSongs);
+const chartsText = messages[lang].charts;
+const heroNews =
+  chartDate && (!latestNews || chartDate >= latestNews.data.date)
+    ? { href: localePath(lang, '/charts/'), title: chartsText.heroTitle(numberOneCountries(chartSongs), currentCountries(chartSongs)) }
+    : latestNews
+      ? { href: localePath(lang, `/news/${latestNews.id}/`), title: pickText(latestNews.data.title, lang) }
+      : null;
 
 // 横長写真はビルド時にwebpの2サイズへ。スマホ(高DPR)でも大きい方が選ばれる
 const PHOTO = { format: 'webp', quality: 80, widths: [960, 1672], sizes: '100vw' } as const;
@@ -75,10 +87,10 @@ const playId = (album) => `${album.kind ?? 'video'}:${album.id}`;
             <p class="hero__label">NOWA MUSIC</p>
             <h1 class="hero__copy">{t.heroCopy.map((line) => <span>{line}</span>)}</h1>
             <p class="hero__sub">{t.heroSub.map((line) => <span>{line}</span>)}</p>
-            {latestNews && (
-              <a class="hero__news" href={localePath(lang, `/news/${latestNews.id}/`)}>
+            {heroNews && (
+              <a class="hero__news" href={heroNews.href}>
                 <span class="hero__news-label">NEWS</span>
-                <span class="hero__news-title">{pickText(latestNews.data.title, lang)}</span>
+                <span class="hero__news-title">{heroNews.title}</span>
                 <span class="hero__news-arrow" aria-hidden="true">→</span>
               </a>
             )}

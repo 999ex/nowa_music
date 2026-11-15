@@ -8,6 +8,7 @@ const m = messages[lang];
 const path = stripLang(Astro.url.pathname);
 const items = [
   { href: '/music/', label: m.nav.music },
+  { href: '/charts/', label: m.charts.nav },
   { href: '/about/', label: m.nav.about },
 ];
 const otherLangs = LANGS.filter((l) => l !== lang);
