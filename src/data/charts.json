@@ -1,6 +1,6 @@
 {
-  "checkedAt": "2026-11-15T13:18:37.546Z",
-  "checkedDate": "2026-11-15",
+  "checkedAt": "2026-11-16T02:46:03.291Z",
+  "checkedDate": "2026-11-16",
   "releasesChecked": 106,
   "songs": [
     {
@@ -13,7 +13,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "br",
           "countryLabel": "ブラジル",
-          "current": 30,
+          "current": 31,
           "best": 1,
           "bestDate": "2026-10-31"
         },
@@ -22,7 +22,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "gb",
           "countryLabel": "イギリス",
-          "current": null,
+          "current": 11,
           "best": 1,
           "bestDate": "2026-10-31"
         },
@@ -40,7 +40,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "us",
           "countryLabel": "アメリカ",
-          "current": null,
+          "current": 61,
           "best": 1,
           "bestDate": "2026-11-03"
         },
@@ -58,7 +58,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "ch",
           "countryLabel": "スイス",
-          "current": 30,
+          "current": 35,
           "best": 1,
           "bestDate": "2026-11-07"
         },
@@ -76,7 +76,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "sg",
           "countryLabel": "シンガポール",
-          "current": 65,
+          "current": 73,
           "best": 5,
           "bestDate": "2026-10-31"
         },
@@ -153,6 +153,15 @@
           "bestDate": "2026-11-06"
         },
         {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "dd",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 29,
+          "bestDate": "2026-11-06"
+        },
+        {
           "chart": "itunes-all-songs",
           "chartLabel": "iTunes Store • 総合 トップソング",
           "country": "ch",
@@ -216,6 +225,15 @@
         {
           "chart": "itunes-jpop-songs",
           "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "dd",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 20,
+          "bestDate": "2026-11-06"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "us",
           "countryLabel": "アメリカ",
           "current": null,
@@ -246,49 +264,15 @@
           "current": null,
           "best": 21,
           "bestDate": "2026-11-06"
-        }
-      ]
-    },
-    {
-      "id": "U28dRnuB:Unspoken Feelings -Silence-",
-      "title": "Unspoken Feelings -Silence-",
-      "url": "https://linkco.re/U28dRnuB",
-      "rows": [
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "za",
-          "countryLabel": "南アフリカ",
-          "current": 2,
-          "best": 2,
-          "bestDate": "2026-11-15"
         },
         {
           "chart": "itunes-jpop-songs",
           "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "us",
-          "countryLabel": "アメリカ",
+          "country": "dd",
+          "countryLabel": "ドイツ",
           "current": null,
-          "best": 4,
-          "bestDate": "2026-11-13"
-        },
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "ca",
-          "countryLabel": "カナダ",
-          "current": 63,
-          "best": 63,
-          "bestDate": "2026-11-15"
-        },
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "sg",
-          "countryLabel": "シンガポール",
-          "current": 66,
-          "best": 66,
-          "bestDate": "2026-11-15"
+          "best": 21,
+          "bestDate": "2026-11-06"
         }
       ]
     },
@@ -327,11 +311,63 @@
         {
           "chart": "itunes-jpop-songs",
           "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "dd",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 19,
+          "bestDate": "2026-11-06"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "us",
           "countryLabel": "アメリカ",
           "current": null,
           "best": 22,
           "bestDate": "2026-11-11"
+        }
+      ]
+    },
+    {
+      "id": "U28dRnuB:Unspoken Feelings -Silence-",
+      "title": "Unspoken Feelings -Silence-",
+      "url": "https://linkco.re/U28dRnuB",
+      "rows": [
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "za",
+          "countryLabel": "南アフリカ",
+          "current": 2,
+          "best": 2,
+          "bestDate": "2026-11-15"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "us",
+          "countryLabel": "アメリカ",
+          "current": 44,
+          "best": 4,
+          "bestDate": "2026-11-13"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "ca",
+          "countryLabel": "カナダ",
+          "current": 89,
+          "best": 63,
+          "bestDate": "2026-11-15"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "sg",
+          "countryLabel": "シンガポール",
+          "current": 74,
+          "best": 66,
+          "bestDate": "2026-11-15"
         }
       ]
     },
@@ -344,6 +380,15 @@
           "chart": "itunes-jpop-songs",
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "de",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 22,
+          "bestDate": "2026-11-06"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "dd",
           "countryLabel": "ドイツ",
           "current": null,
           "best": 22,
@@ -400,6 +445,15 @@
           "current": null,
           "best": 18,
           "bestDate": "2026-11-06"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "dd",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 18,
+          "bestDate": "2026-11-06"
         }
       ]
     },
@@ -429,11 +483,45 @@
         {
           "chart": "itunes-jpop-songs",
           "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "dd",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 17,
+          "bestDate": "2026-11-06"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "gb",
           "countryLabel": "イギリス",
           "current": null,
           "best": 31,
           "bestDate": "2026-11-10"
+        }
+      ]
+    },
+    {
+      "id": "zUh25MFz:まだ愛してると言えたなら",
+      "title": "まだ愛してると言えたなら",
+      "url": "https://linkco.re/zUh25MFz",
+      "rows": [
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "de",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 25,
+          "bestDate": "2026-11-06"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "dd",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 25,
+          "bestDate": "2026-11-06"
         }
       ]
     },
@@ -459,6 +547,56 @@
           "current": null,
           "best": 10,
           "bestDate": "2026-10-29"
+        }
+      ]
+    },
+    {
+      "id": "582bD7U4:愛したすべてが、今もここにある",
+      "title": "愛したすべてが、今もここにある",
+      "url": "https://linkco.re/582bD7U4",
+      "rows": [
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "de",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 27,
+          "bestDate": "2026-11-06"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "dd",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 27,
+          "bestDate": "2026-11-06"
+        }
+      ]
+    },
+    {
+      "id": "qrXVtuYh:遠い日の約束",
+      "title": "遠い日の約束",
+      "url": "https://linkco.re/qrXVtuYh",
+      "rows": [
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "de",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 24,
+          "bestDate": "2026-11-06"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "dd",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 24,
+          "bestDate": "2026-11-06"
         }
       ]
     },
@@ -511,50 +649,18 @@
       ]
     },
     {
-      "id": "zUh25MFz:まだ愛してると言えたなら",
-      "title": "まだ愛してると言えたなら",
-      "url": "https://linkco.re/zUh25MFz",
+      "id": "CNRNhyQP:伝えられなかった想い",
+      "title": "伝えられなかった想い",
+      "url": "https://linkco.re/CNRNhyQP",
       "rows": [
         {
           "chart": "itunes-jpop-songs",
           "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "de",
-          "countryLabel": "ドイツ",
+          "country": "us",
+          "countryLabel": "アメリカ",
           "current": null,
-          "best": 25,
-          "bestDate": "2026-11-06"
-        }
-      ]
-    },
-    {
-      "id": "582bD7U4:愛したすべてが、今もここにある",
-      "title": "愛したすべてが、今もここにある",
-      "url": "https://linkco.re/582bD7U4",
-      "rows": [
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "de",
-          "countryLabel": "ドイツ",
-          "current": null,
-          "best": 27,
-          "bestDate": "2026-11-06"
-        }
-      ]
-    },
-    {
-      "id": "qrXVtuYh:遠い日の約束",
-      "title": "遠い日の約束",
-      "url": "https://linkco.re/qrXVtuYh",
-      "rows": [
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "de",
-          "countryLabel": "ドイツ",
-          "current": null,
-          "best": 24,
-          "bestDate": "2026-11-06"
+          "best": 10,
+          "bestDate": "2026-11-13"
         }
       ]
     },
@@ -587,22 +693,6 @@
           "current": null,
           "best": 3,
           "bestDate": "2026-11-01"
-        }
-      ]
-    },
-    {
-      "id": "CNRNhyQP:伝えられなかった想い",
-      "title": "伝えられなかった想い",
-      "url": "https://linkco.re/CNRNhyQP",
-      "rows": [
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "us",
-          "countryLabel": "アメリカ",
-          "current": null,
-          "best": 10,
-          "bestDate": "2026-11-13"
         }
       ]
     }
