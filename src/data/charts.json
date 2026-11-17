@@ -1,7 +1,7 @@
 {
-  "checkedAt": "2026-11-16T02:46:03.291Z",
-  "checkedDate": "2026-11-16",
-  "releasesChecked": 106,
+  "checkedAt": "2026-11-17T05:05:51.618Z",
+  "checkedDate": "2026-11-17",
+  "releasesChecked": 108,
   "songs": [
     {
       "id": "F5AN7X0P:伝えられなかった想い",
@@ -13,7 +13,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "br",
           "countryLabel": "ブラジル",
-          "current": 31,
+          "current": 36,
           "best": 1,
           "bestDate": "2026-10-31"
         },
@@ -22,7 +22,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "gb",
           "countryLabel": "イギリス",
-          "current": 11,
+          "current": 64,
           "best": 1,
           "bestDate": "2026-10-31"
         },
@@ -40,7 +40,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "us",
           "countryLabel": "アメリカ",
-          "current": 61,
+          "current": null,
           "best": 1,
           "bestDate": "2026-11-03"
         },
@@ -58,7 +58,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "ch",
           "countryLabel": "スイス",
-          "current": 35,
+          "current": 40,
           "best": 1,
           "bestDate": "2026-11-07"
         },
@@ -76,7 +76,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "sg",
           "countryLabel": "シンガポール",
-          "current": 73,
+          "current": 87,
           "best": 5,
           "bestDate": "2026-10-31"
         },
@@ -115,6 +115,15 @@
           "current": null,
           "best": 13,
           "bestDate": "2026-11-04"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "mx",
+          "countryLabel": "メキシコ",
+          "current": 13,
+          "best": 13,
+          "bestDate": "2026-11-17"
         },
         {
           "chart": "itunes-jpop-songs",
@@ -338,7 +347,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "za",
           "countryLabel": "南アフリカ",
-          "current": 2,
+          "current": 6,
           "best": 2,
           "bestDate": "2026-11-15"
         },
@@ -347,7 +356,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "us",
           "countryLabel": "アメリカ",
-          "current": 44,
+          "current": null,
           "best": 4,
           "bestDate": "2026-11-13"
         },
@@ -356,16 +365,16 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "ca",
           "countryLabel": "カナダ",
-          "current": 89,
-          "best": 63,
-          "bestDate": "2026-11-15"
+          "current": null,
+          "best": 30,
+          "bestDate": "2026-11-14"
         },
         {
           "chart": "itunes-jpop-songs",
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "sg",
           "countryLabel": "シンガポール",
-          "current": 74,
+          "current": 88,
           "best": 66,
           "bestDate": "2026-11-15"
         }
