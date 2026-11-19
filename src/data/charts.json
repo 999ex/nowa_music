@@ -1,7 +1,7 @@
 {
-  "checkedAt": "2026-11-17T05:05:51.618Z",
-  "checkedDate": "2026-11-17",
-  "releasesChecked": 108,
+  "checkedAt": "2026-11-19T04:09:07.762Z",
+  "checkedDate": "2026-11-19",
+  "releasesChecked": 110,
   "songs": [
     {
       "id": "F5AN7X0P:伝えられなかった想い",
@@ -13,7 +13,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "br",
           "countryLabel": "ブラジル",
-          "current": 36,
+          "current": null,
           "best": 1,
           "bestDate": "2026-10-31"
         },
@@ -22,7 +22,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "gb",
           "countryLabel": "イギリス",
-          "current": 64,
+          "current": null,
           "best": 1,
           "bestDate": "2026-10-31"
         },
@@ -40,7 +40,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "us",
           "countryLabel": "アメリカ",
-          "current": null,
+          "current": 54,
           "best": 1,
           "bestDate": "2026-11-03"
         },
@@ -58,9 +58,9 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "ch",
           "countryLabel": "スイス",
-          "current": 40,
+          "current": null,
           "best": 1,
-          "bestDate": "2026-11-07"
+          "bestDate": "2026-11-06"
         },
         {
           "chart": "itunes-jpop-songs",
@@ -76,7 +76,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "sg",
           "countryLabel": "シンガポール",
-          "current": 87,
+          "current": null,
           "best": 5,
           "bestDate": "2026-10-31"
         },
@@ -121,7 +121,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "mx",
           "countryLabel": "メキシコ",
-          "current": 13,
+          "current": 48,
           "best": 13,
           "bestDate": "2026-11-17"
         },
@@ -347,7 +347,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "za",
           "countryLabel": "南アフリカ",
-          "current": 6,
+          "current": 7,
           "best": 2,
           "bestDate": "2026-11-15"
         },
@@ -363,20 +363,20 @@
         {
           "chart": "itunes-jpop-songs",
           "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "sg",
+          "countryLabel": "シンガポール",
+          "current": null,
+          "best": 5,
+          "bestDate": "2026-11-12"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "ca",
           "countryLabel": "カナダ",
           "current": null,
           "best": 30,
           "bestDate": "2026-11-14"
-        },
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "sg",
-          "countryLabel": "シンガポール",
-          "current": 88,
-          "best": 66,
-          "bestDate": "2026-11-15"
         }
       ]
     },
@@ -510,31 +510,6 @@
       ]
     },
     {
-      "id": "zUh25MFz:まだ愛してると言えたなら",
-      "title": "まだ愛してると言えたなら",
-      "url": "https://linkco.re/zUh25MFz",
-      "rows": [
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "de",
-          "countryLabel": "ドイツ",
-          "current": null,
-          "best": 25,
-          "bestDate": "2026-11-06"
-        },
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "dd",
-          "countryLabel": "ドイツ",
-          "current": null,
-          "best": 25,
-          "bestDate": "2026-11-06"
-        }
-      ]
-    },
-    {
       "id": "C3YMx014:伝えられなかった想い",
       "title": "伝えられなかった想い (-Piano ver-)",
       "url": "https://linkco.re/C3YMx014",
@@ -556,6 +531,40 @@
           "current": null,
           "best": 10,
           "bestDate": "2026-10-29"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "id",
+          "countryLabel": "インドネシア",
+          "current": 65,
+          "best": 65,
+          "bestDate": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "id": "zUh25MFz:まだ愛してると言えたなら",
+      "title": "まだ愛してると言えたなら",
+      "url": "https://linkco.re/zUh25MFz",
+      "rows": [
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "de",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 25,
+          "bestDate": "2026-11-06"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "dd",
+          "countryLabel": "ドイツ",
+          "current": null,
+          "best": 25,
+          "bestDate": "2026-11-06"
         }
       ]
     },
