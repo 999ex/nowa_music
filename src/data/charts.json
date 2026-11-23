@@ -1,6 +1,6 @@
 {
-  "checkedAt": "2026-11-22T03:01:57.856Z",
-  "checkedDate": "2026-11-22",
+  "checkedAt": "2026-11-23T03:45:03.524Z",
+  "checkedDate": "2026-11-23",
   "releasesChecked": 110,
   "songs": [
     {
@@ -40,7 +40,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "us",
           "countryLabel": "アメリカ",
-          "current": 70,
+          "current": null,
           "best": 1,
           "bestDate": "2026-11-03"
         },
@@ -121,7 +121,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "mx",
           "countryLabel": "メキシコ",
-          "current": 97,
+          "current": 100,
           "best": 13,
           "bestDate": "2026-11-17"
         },
@@ -663,6 +663,22 @@
           "current": null,
           "best": 4,
           "bestDate": "2026-11-01"
+        }
+      ]
+    },
+    {
+      "id": "r5VutdnP:もう一度だけ名前を呼んで",
+      "title": "もう一度だけ名前を呼んで",
+      "url": "https://linkco.re/r5VutdnP",
+      "rows": [
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "br",
+          "countryLabel": "ブラジル",
+          "current": 4,
+          "best": 4,
+          "bestDate": "2026-11-23"
         }
       ]
     },
