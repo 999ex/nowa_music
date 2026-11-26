@@ -1,6 +1,6 @@
 {
-  "checkedAt": "2026-11-25T05:27:48.189Z",
-  "checkedDate": "2026-11-25",
+  "checkedAt": "2026-11-26T04:58:12.125Z",
+  "checkedDate": "2026-11-26",
   "releasesChecked": 110,
   "songs": [
     {
@@ -40,7 +40,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "us",
           "countryLabel": "アメリカ",
-          "current": null,
+          "current": 94,
           "best": 1,
           "bestDate": "2026-11-03"
         },
@@ -252,6 +252,49 @@
       ]
     },
     {
+      "id": "U28dRnuB:Unspoken Feelings -Silence-",
+      "title": "Unspoken Feelings -Silence-",
+      "url": "https://linkco.re/U28dRnuB",
+      "rows": [
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "za",
+          "countryLabel": "南アフリカ",
+          "current": null,
+          "best": 1,
+          "bestDate": "2026-11-13"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "us",
+          "countryLabel": "アメリカ",
+          "current": null,
+          "best": 4,
+          "bestDate": "2026-11-13"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "sg",
+          "countryLabel": "シンガポール",
+          "current": null,
+          "best": 5,
+          "bestDate": "2026-11-12"
+        },
+        {
+          "chart": "itunes-jpop-songs",
+          "chartLabel": "iTunes Store • J-Pop トップソング",
+          "country": "ca",
+          "countryLabel": "カナダ",
+          "current": null,
+          "best": 30,
+          "bestDate": "2026-11-14"
+        }
+      ]
+    },
+    {
       "id": "MHfg6eZe:静かな夜に、あなたを思い出す",
       "title": "静かな夜に、あなたを思い出す",
       "url": "https://linkco.re/MHfg6eZe",
@@ -334,49 +377,6 @@
           "current": null,
           "best": 22,
           "bestDate": "2026-11-11"
-        }
-      ]
-    },
-    {
-      "id": "U28dRnuB:Unspoken Feelings -Silence-",
-      "title": "Unspoken Feelings -Silence-",
-      "url": "https://linkco.re/U28dRnuB",
-      "rows": [
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "za",
-          "countryLabel": "南アフリカ",
-          "current": 44,
-          "best": 2,
-          "bestDate": "2026-11-15"
-        },
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "us",
-          "countryLabel": "アメリカ",
-          "current": null,
-          "best": 4,
-          "bestDate": "2026-11-13"
-        },
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "sg",
-          "countryLabel": "シンガポール",
-          "current": null,
-          "best": 5,
-          "bestDate": "2026-11-12"
-        },
-        {
-          "chart": "itunes-jpop-songs",
-          "chartLabel": "iTunes Store • J-Pop トップソング",
-          "country": "ca",
-          "countryLabel": "カナダ",
-          "current": null,
-          "best": 30,
-          "bestDate": "2026-11-14"
         }
       ]
     },
@@ -676,7 +676,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "br",
           "countryLabel": "ブラジル",
-          "current": 10,
+          "current": 17,
           "best": 4,
           "bestDate": "2026-11-23"
         }
