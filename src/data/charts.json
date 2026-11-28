@@ -1,6 +1,6 @@
 {
-  "checkedAt": "2026-11-27T04:59:09.788Z",
-  "checkedDate": "2026-11-27",
+  "checkedAt": "2026-11-28T04:44:25.832Z",
+  "checkedDate": "2026-11-28",
   "releasesChecked": 110,
   "songs": [
     {
@@ -40,7 +40,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "us",
           "countryLabel": "アメリカ",
-          "current": 12,
+          "current": 23,
           "best": 1,
           "bestDate": "2026-11-03"
         },
@@ -374,7 +374,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "us",
           "countryLabel": "アメリカ",
-          "current": 99,
+          "current": null,
           "best": 22,
           "bestDate": "2026-11-11"
         }
@@ -676,7 +676,7 @@
           "chartLabel": "iTunes Store • J-Pop トップソング",
           "country": "br",
           "countryLabel": "ブラジル",
-          "current": 21,
+          "current": 26,
           "best": 4,
           "bestDate": "2026-11-23"
         }
